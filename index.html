@@ -6,180 +6,147 @@
     <title>Mizuki OS Professional Edition</title>
     <style>
         :root { 
-            --primary-accent: #8E9E8E; /* 配合背景的柔和灰绿 */
+            --primary-accent: #8E9E8E;
             --input-lift: 48px; 
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            /* 已经为你内置了初始背景图逻辑 */
-            --system-bg: url('https://r.jina.ai/i/429486c761c54e09be04407887376092'); 
+            /* 预设背景逻辑 */
+            --default-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; margin: 0; padding: 0; }
-        body, html { height: 100%; overflow: hidden; font-family: -apple-system, "SF Pro", sans-serif; background: #FFF; }
+        body, html { height: 100%; overflow: hidden; font-family: -apple-system, sans-serif; background: #000; }
 
-        /* 主屏幕：使用大佬提供的神仙背景 */
+        /* 主屏幕 */
         #phone-screen { 
-            width: 100%; height: 100%; position: relative; z-index: 1; 
-            background-image: var(--system-bg);
+            width: 100%; height: 100%; position: relative; 
+            background: var(--default-gradient);
             background-size: cover; background-position: center;
             display: flex; flex-direction: column; align-items: center; 
-            transition: background-image 0.5s ease;
+            transition: background-image 0.6s ease-in-out;
         }
 
-        /* 状态栏：为了在浅色背景下看清，调深了颜色 */
-        .status-bar { width: 100%; padding: 10px 24px; display: flex; justify-content: space-between; font-size: 13px; color: #444; font-weight: 600; margin-top: env(safe-area-inset-top); }
-        .time-display { font-size: 84px; font-weight: 200; color: #444; margin-top: 50px; letter-spacing: -3px; opacity: 0.9; }
+        /* 状态栏 & 时间 (针对浅色图加深了颜色) */
+        .status-bar { width: 100%; padding: 12px 24px; display: flex; justify-content: space-between; font-size: 13px; color: #333; font-weight: 700; margin-top: env(safe-area-inset-top); }
+        .time-display { font-size: 80px; font-weight: 200; color: #333; margin-top: 50px; letter-spacing: -2px; }
 
-        /* 应用图标：微调阴影更符合氛围 */
-        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; padding: 40px 24px; width: 100%; }
+        /* 桌面图标 */
+        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 40px 24px; width: 100%; }
         .app-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-        .app-icon { width: 62px; height: 62px; border-radius: 16px; background: #FFF; box-shadow: 0 8px 24px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; font-size: 28px; border: 1px solid rgba(255,255,255,0.8); }
-        .app-item span { font-size: 12px; color: #555; margin-top: 8px; font-weight: 500; }
+        .app-icon { width: 62px; height: 62px; border-radius: 16px; background: rgba(255,255,255,0.9); box-shadow: 0 4px 15px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: center; font-size: 26px; border: 1px solid #fff; }
+        .app-item span { font-size: 12px; color: #444; margin-top: 8px; font-weight: 600; text-shadow: 0 1px 2px rgba(255,255,255,0.8); }
 
-        /* 全屏容器 */
-        .view-container { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #F9F9F9; z-index: 1000; flex-direction: column; }
-        .view-sub { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #F9F9F9; z-index: 2000; flex-direction: column; }
+        /* 统一视图层 */
+        .view-layer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #F2F2F7; z-index: 1000; flex-direction: column; }
+        .nav-header { padding: 50px 16px 12px; background: #FFF; border-bottom: 0.5px solid #DDD; display: flex; align-items: center; justify-content: space-between; }
+        .nav-btn { color: #007AFF; font-size: 17px; cursor: pointer; }
+        .nav-title { font-size: 17px; font-weight: 600; }
 
-        /* 导航栏 */
-        .nav-bar { padding: 50px 18px 12px; background: #FFF; border-bottom: 0.5px solid #E5E5E5; display: flex; align-items: center; justify-content: space-between; }
-        .nav-action { color: #007AFF; font-size: 17px; cursor: pointer; min-width: 60px; }
-        .nav-title { font-size: 17px; font-weight: 600; color: #000; }
+        /* 设置卡片 */
+        .menu-list { margin: 20px 16px; background: #FFF; border-radius: 12px; overflow: hidden; }
+        .menu-item { padding: 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.5px solid #F2F2F7; cursor: pointer; }
+        .menu-item:active { background: #F9F9F9; }
 
-        /* 设置卡片模块 */
-        .card-container { margin: 15px; background: #FFF; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
-        .card-row { padding: 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.5px solid #F0F0F0; cursor: pointer; }
-        .card-row:last-child { border-bottom: none; }
-        .card-row:active { background: #F5F5F5; }
-        .card-row label { font-size: 16px; color: #333; }
-        .chevron { color: #C7C7CC; font-weight: bold; }
+        /* 保存按钮样式 */
+        .btn-action { width: calc(100% - 32px); margin: 20px 16px; padding: 16px; background: var(--primary-accent); color: #FFF; border: none; border-radius: 12px; font-weight: 600; font-size: 16px; }
 
-        /* 表单控件 */
-        .form-box { padding: 0 15px; }
-        .input-group { background: #FFF; border-radius: 12px; padding: 18px; margin-top: 15px; }
-        .input-group label { display: block; font-size: 12px; color: #999; margin-bottom: 10px; font-weight: bold; text-transform: uppercase; }
-        .input-control { width: 100%; padding: 12px; border: none; background: #F2F2F7; border-radius: 10px; font-size: 15px; }
+        /* 聊天气泡 */
+        .chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; background: #EDEDED; }
+        .input-wrap { background: #FFF; padding: 10px 16px calc(var(--input-lift) + env(safe-area-inset-bottom)); display: flex; border-top: 0.5px solid #CCC; }
+        .input-box { flex: 1; background: #F2F2F7; border: none; border-radius: 20px; padding: 10px 16px; font-size: 16px; }
 
-        /* 保存按钮 */
-        .save-btn { width: 100%; padding: 16px; background: #8E9E8E; color: #FFF; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; margin-top: 20px; box-shadow: 0 4px 12px rgba(142,158,142,0.3); }
-
-        /* 聊天系统 */
-        .chat-view { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; background: #F2F2F2; }
-        .chat-bar { background: #FFF; border-top: 0.5px solid #D1D1D6; padding: 10px 16px calc(var(--input-lift) + env(safe-area-inset-bottom)); display: flex; align-items: center; }
-        .chat-input { flex: 1; background: #F2F2F7; border-radius: 20px; padding: 10px 16px; border: none; font-size: 16px; }
-        .send-action { margin-left: 12px; color: #007AFF; font-weight: 600; font-size: 16px; border: none; background: none; }
-
-        #toast { display: none; position: fixed; bottom: 18%; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.75); color: #FFF; padding: 10px 20px; border-radius: 22px; z-index: 9999; font-size: 14px; }
+        #toast-box { display: none; position: fixed; bottom: 20%; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: #FFF; padding: 10px 20px; border-radius: 20px; z-index: 9999; }
     </style>
 </head>
 <body>
 
 <div id="phone-screen">
-    <div class="status-bar"><span id="mini-time">00:00</span><span>5G 100%</span></div>
+    <div class="status-bar"><span>00:00</span><span>📶 100%</span></div>
     <div class="time-display" id="clock">00:00</div>
     <div class="app-grid">
-        <div class="app-item" onclick="showView('v-chat')"><div class="app-icon" style="background:#FFF">💬</div><span>沟通</span></div>
-        <div class="app-item" onclick="showView('v-settings')"><div class="app-icon" style="background:#FFF">⚙️</div><span>设置</span></div>
+        <div class="app-item" onclick="toggleV('v-msg', true)"><div class="app-icon">💬</div><span>沟通</span></div>
+        <div class="app-item" onclick="toggleV('v-set', true)"><div class="app-icon">⚙️</div><span>设置</span></div>
     </div>
 </div>
 
-<div id="v-settings" class="view-container">
-    <div class="nav-bar"><span class="nav-action" onclick="hideView('v-settings')">退出</span><span class="nav-title">系统配置</span><span class="nav-action" style="visibility:hidden"></span></div>
-    <div class="card-container">
-        <div class="card-row" onclick="showSub('s-api')"><label>API 基础配置</label><span class="chevron">></span></div>
-        <div class="card-row" onclick="showSub('s-ui')"><label>个性化美化</label><span class="chevron">></span></div>
+<div id="v-set" class="view-layer">
+    <div class="nav-header"><span class="nav-btn" onclick="toggleV('v-set', false)">退出</span><span class="nav-title">设置</span><span></span></div>
+    <div class="menu-list">
+        <div class="menu-item" onclick="toggleV('s-ui', true)"><span>个性化美化</span><span>></span></div>
+        <div class="menu-item" onclick="toggleV('s-api', true)"><span>API 密钥配置</span><span>></span></div>
     </div>
 
-    <div id="s-api" class="view-sub">
-        <div class="nav-bar"><span class="nav-action" onclick="hideSub('s-api')">返回</span><span class="nav-title">API 配置</span><span class="nav-action" style="visibility:hidden"></span></div>
-        <div class="form-box">
-            <div class="input-group">
-                <label>Gemini API Key</label>
-                <input type="password" id="api-key-val" class="input-control" placeholder="在此输入密钥...">
-            </div>
-            <button class="save-btn" onclick="saveData('api')">应用并保存</button>
-        </div>
-    </div>
-
-    <div id="s-ui" class="view-sub">
-        <div class="nav-bar"><span class="nav-action" onclick="hideSub('s-ui')">返回</span><span class="nav-title">美化设置</span><span class="nav-action" style="visibility:hidden"></span></div>
-        <div class="form-box">
-            <div class="input-group">
-                <label>从相册选取壁纸</label>
-                <input type="file" accept="image/*" onchange="changeWallpaper(event)" class="input-control">
-            </div>
-            <div class="input-group">
-                <label>输入栏避让高度 (PX)</label>
-                <input type="range" min="10" max="150" id="height-range" style="width:100%">
-            </div>
-            <button class="save-btn" onclick="saveData('ui')">保存当前美化</button>
+    <div id="s-ui" class="view-layer" style="z-index:1100">
+        <div class="nav-header"><span class="nav-btn" onclick="toggleV('s-ui', false)">返回</span><span class="nav-title">视觉美化</span><span></span></div>
+        <div style="padding:16px">
+            <label style="font-size:13px; color:#8e8e93">更换壁纸</label>
+            <input type="file" accept="image/*" onchange="userWallpaper(event)" style="display:block; margin:15px 0">
+            <label style="font-size:13px; color:#8e8e93">底部避让高度</label>
+            <input type="range" min="10" max="150" id="lift-range" style="width:100%; margin:15px 0">
+            <button class="btn-action" onclick="saveUI()">应用并保存设置</button>
+            <button class="btn-action" style="background:#CCC; margin-top:0" onclick="resetSystem()">恢复初始壁纸</button>
         </div>
     </div>
 </div>
 
-<div id="v-chat" class="view-container">
-    <div class="nav-bar"><span class="nav-action" onclick="hideView('v-chat')">返回</span><span class="nav-title">对话交互</span><span class="nav-action" style="visibility:hidden"></span></div>
-    <div id="msg-container" class="chat-view"></div>
-    <div class="chat-bar">
-        <input type="text" id="msg-input-field" class="chat-input" placeholder="输入消息内容...">
-        <button class="send-action" onclick="handleSend()">发送</button>
-    </div>
+<div id="v-msg" class="view-layer">
+    <div class="nav-header"><span class="nav-btn" onclick="toggleV('v-msg', false)">返回</span><span class="nav-title">沟通</span><span></span></div>
+    <div id="chat-list" class="chat-container"></div>
+    <div class="input-wrap"><input type="text" id="m-in" class="input-box" placeholder="输入内容..."><button onclick="send()" style="margin-left:10px; color:#007AFF; font-weight:600; border:none; background:none">发送</button></div>
 </div>
 
-<div id="toast">设置已成功应用</div>
+<div id="toast-box">设置已应用</div>
 
 <script>
-    function updateClock() {
-        const now = new Date();
-        const t = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+    // 【关键】大佬，这里是你要的初始背景图链接，如果还是白屏，我会教你用 Base64
+    const DEFAULT_WALLPAPER = "https://r.jina.ai/i/429486c761c54e09be04407887376092";
+
+    function updateTime() {
+        const d = new Date();
+        const t = d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
         document.getElementById('clock').innerText = t;
-        document.getElementById('mini-time').innerText = t;
     }
-    setInterval(updateClock, 1000); updateClock();
+    setInterval(updateTime, 1000); updateTime();
 
-    function showView(id) { document.getElementById(id).style.display = 'flex'; }
-    function hideView(id) { document.getElementById(id).style.display = 'none'; }
-    function showSub(id) { document.getElementById(id).style.display = 'flex'; }
-    function hideSub(id) { document.getElementById(id).style.display = 'none'; }
+    function toggleV(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
 
-    function changeWallpaper(e) {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (ev) => {
+    function userWallpaper(e) {
+        const f = e.target.files[0];
+        const r = new FileReader();
+        r.onload = (ev) => {
             document.getElementById('phone-screen').style.backgroundImage = `url(${ev.target.result})`;
-            localStorage.setItem('m_bg_data', ev.target.result);
+            localStorage.setItem('m_custom_bg', ev.target.result);
         };
-        reader.readAsDataURL(file);
+        r.readAsDataURL(f);
     }
 
-    function saveData(type) {
-        if(type === 'ui') {
-            const h = document.getElementById('height-range').value;
-            localStorage.setItem('m_lift_val', h);
-            document.documentElement.style.setProperty('--input-lift', h + 'px');
-        } else {
-            localStorage.setItem('m_key_val', document.getElementById('api-key-val').value);
-        }
-        const toast = document.getElementById('toast');
-        toast.style.display = 'block';
-        setTimeout(() => toast.style.display = 'none', 2000);
+    function saveUI() {
+        const h = document.getElementById('lift-range').value;
+        localStorage.setItem('m_lift', h);
+        document.documentElement.style.setProperty('--input-lift', h + 'px');
+        const box = document.getElementById('toast-box');
+        box.style.display = 'block'; setTimeout(()=>box.style.display='none', 2000);
     }
 
-    function handleSend() {
-        const input = document.getElementById('msg-input-field');
-        if(!input.value) return;
-        const div = document.createElement('div');
-        div.style = "align-self:flex-end; background:#95EC69; padding:10px 16px; border-radius:15px; margin-bottom:12px; max-width:80%; font-size:15px; box-shadow:0 1px 3px rgba(0,0,0,0.1);";
-        div.innerText = input.value;
-        document.getElementById('msg-container').appendChild(div);
-        input.value = '';
-        document.getElementById('msg-container').scrollTop = document.getElementById('msg-container').scrollHeight;
+    function resetSystem() {
+        localStorage.removeItem('m_custom_bg');
+        document.getElementById('phone-screen').style.backgroundImage = `url(${DEFAULT_WALLPAPER})`;
+    }
+
+    function send() {
+        const i = document.getElementById('m-in'); if(!i.value) return;
+        const d = document.createElement('div');
+        d.style = "align-self:flex-end; background:#95EC69; padding:10px 15px; border-radius:15px; margin-bottom:10px; max-width:80%; font-size:15px";
+        d.innerText = i.value;
+        document.getElementById('chat-list').appendChild(d);
+        i.value = '';
     }
 
     window.onload = () => {
-        const savedBg = localStorage.getItem('m_bg_data');
-        if(savedBg) document.getElementById('phone-screen').style.backgroundImage = `url(${savedBg})`;
-        const savedLift = localStorage.getItem('m_lift_val') || '48';
-        document.getElementById('height-range').value = savedLift;
-        document.documentElement.style.setProperty('--input-lift', savedLift + 'px');
+        // 逻辑：优先读用户自定义，没有就读 DEFAULT_WALLPAPER
+        const custom = localStorage.getItem('m_custom_bg');
+        document.getElementById('phone-screen').style.backgroundImage = `url(${custom || DEFAULT_WALLPAPER})`;
+        const lift = localStorage.getItem('m_lift') || '48';
+        document.getElementById('lift-range').value = lift;
+        document.documentElement.style.setProperty('--input-lift', lift + 'px');
     };
 </script>
 </body>
