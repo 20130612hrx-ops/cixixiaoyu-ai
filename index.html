@@ -10,10 +10,8 @@
     
     <style>
         :root {
-            /* 核心色调：奶油灰粉 */
             --mizuki-bg: #f9f4f5;
             --card-bg: rgba(255, 255, 255, 0.65);
-            /* 边框从纯黑改为极细的深咖色，增加沉稳感 */
             --soft-border: 1px solid rgba(120, 100, 100, 0.15);
             --accent-color: #8b7d7d; 
         }
@@ -28,20 +26,18 @@
             margin: 0;
             padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom);
             background-color: var(--mizuki-bg);
-            /* 背景加入极其微弱的点阵纹理，消除单调感 */
             background-image: radial-gradient(#e2d5d5 0.8px, transparent 0);
             background-size: 24px 24px;
             height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-family: -apple-system, "Helvetica Neue", sans-serif;
+            font-family: -apple-system, sans-serif;
             overflow: hidden;
             transition: background 0.5s ease;
             color: var(--accent-color);
         }
 
-        /* 状态栏 */
         .status-bar {
             width: 100%;
             display: flex;
@@ -50,15 +46,12 @@
             font-size: 11px;
             font-weight: 700;
             font-family: monospace;
-            letter-spacing: 1px;
         }
 
-        /* 个人卡片：糯米糍质感 */
         .mizuki-card {
             margin-top: 20px;
             width: 100%;
             background: var(--card-bg);
-            /* 条纹装饰：极淡且克制 */
             background-image: linear-gradient(90deg, rgba(0,0,0,0.01) 1px, transparent 1px);
             background-size: 12px 100%;
             backdrop-filter: blur(25px) saturate(180%);
@@ -76,7 +69,10 @@
             height: 90px;
             margin: 0 auto 12px;
             cursor: pointer;
+            transition: transform 0.2s;
         }
+
+        .avatar-box:active { transform: scale(0.95); }
 
         #avatar-img {
             width: 100%; height: 100%;
@@ -86,15 +82,9 @@
             object-fit: cover;
         }
 
-        #frame-overlay {
-            position: absolute;
-            top: -10px; left: -10px;
-            width: 110px; height: 110px;
-            pointer-events: none;
-            display: none;
-        }
+        /* 隐藏的上传控件 */
+        #file-input { display: none; }
 
-        /* 中间组件区 */
         .middle-container {
             display: flex;
             width: 100%;
@@ -112,7 +102,6 @@
             justify-content: center;
             align-items: center;
             font-size: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
             color: var(--accent-color);
         }
 
@@ -135,7 +124,6 @@
             font-weight: 700;
         }
 
-        /* 底部 Dock 栏：呼吸感毛玻璃 */
         .dock-bar {
             margin-top: auto;
             margin-bottom: 40px;
@@ -161,14 +149,8 @@
             font-size: 11px;
             font-weight: 600;
             border: var(--soft-border);
-            transition: transform 0.1s;
         }
 
-        .dock-icon:active {
-            transform: scale(0.92);
-        }
-
-        /* 设置面板 */
         #settings-panel {
             display: none;
             position: fixed;
@@ -177,19 +159,6 @@
             background: #fff;
             z-index: 9999;
             padding: 60px 30px;
-        }
-
-        .input-group { margin-bottom: 25px; }
-        .input-group label { display: block; font-size: 10px; font-weight: bold; margin-bottom: 8px; color: #aaa; }
-        .input-group input { 
-            width: 100%; padding: 14px; 
-            border: 1px solid #eee; border-radius: 12px; 
-            background: #fcfcfc; outline: none; font-size: 14px;
-        }
-        .btn-save { 
-            width: 100%; padding: 16px; background: #555; 
-            color: #fff; border: none; border-radius: 16px; 
-            font-weight: bold; margin-top: 10px; 
         }
     </style>
 </head>
@@ -201,11 +170,11 @@
         <span>BAT 827%</span>
     </div>
 
-    <div class="mizuki-card" onclick="event.stopPropagation(); nextFrame();">
-        <div class="avatar-box">
+    <div class="mizuki-card">
+        <div class="avatar-box" onclick="event.stopPropagation(); document.getElementById('file-input').click();">
             <img id="avatar-img" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Mizuki">
-            <img id="frame-overlay" src="">
         </div>
+        <input type="file" id="file-input" accept="image/*" onchange="handleFile(this)">
         <div style="font-size: 19px; font-weight: 800; letter-spacing: 0.5px;">瑞希</div>
         <div style="font-size: 10px; opacity: 0.4; margin-top: 5px; font-family: monospace;">@STAY_REAL_2025</div>
     </div>
@@ -226,33 +195,26 @@
     </nav>
 
     <div id="settings-panel">
-        <h2 style="text-align:center; font-size: 18px; letter-spacing: 2px; color: #333;">CONFIG</h2>
-        <div class="input-group">
-            <label>AVATAR URL</label>
-            <input type="text" id="input-avatar" placeholder="Paste link here...">
+        <h2 style="text-align:center; font-size: 18px; letter-spacing: 2px;">CONFIG</h2>
+        <div style="margin-bottom:25px;">
+            <label style="font-size:10px; font-weight:bold; color:#aaa;">WIDGET TEXT</label>
+            <input type="text" id="input-widget" style="width:100%; padding:14px; border:1px solid #eee; border-radius:12px; outline:none;">
         </div>
-        <div class="input-group">
-            <label>WIDGET TEXT</label>
-            <input type="text" id="input-widget" placeholder="Input facial expression...">
-        </div>
-        <button class="btn-save" onclick="saveSettings()">SAVE & APPLY</button>
-        <button onclick="toggleSettings()" style="width:100%; background:none; border:none; margin-top:25px; color:#ccc; font-size:12px;">CLOSE</button>
+        <button onclick="saveSettings()" style="width:100%; padding:16px; background:#555; color:#fff; border:none; border-radius:16px; font-weight:bold;">SAVE</button>
+        <button onclick="toggleSettings()" style="width:100%; background:none; border:none; margin-top:25px; color:#ccc;">CLOSE</button>
     </div>
 
     <script>
-        // 1. 初始化存储
         window.onload = function() {
-            const ava = localStorage.getItem('m_ava_final');
+            const ava = localStorage.getItem('m_ava_local');
             const wid = localStorage.getItem('m_wid_final');
             if(ava) document.getElementById('avatar-img').src = ava;
             if(wid) document.getElementById('widget-display').innerText = wid;
             updateTime();
         };
 
-        // 2. 触觉反馈
         function triggerHaptic() { if (navigator.vibrate) navigator.vibrate(10); }
 
-        // 3. 动态时间
         function updateTime() {
             const now = new Date();
             document.getElementById('live-time').innerText = 
@@ -261,7 +223,22 @@
         }
         setInterval(updateTime, 1000);
 
-        // 4. 设置面板
+        // 本地文件处理逻辑：将图片转为 Base64 存储
+        function handleFile(input) {
+            triggerHaptic();
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64Data = e.target.result;
+                    document.getElementById('avatar-img').src = base64Data;
+                    // 保存到本地，下次打开依然是这张图
+                    localStorage.setItem('m_ava_local', base64Data);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
         function toggleSettings() {
             triggerHaptic();
             const p = document.getElementById('settings-panel');
@@ -269,31 +246,18 @@
         }
 
         function saveSettings() {
-            const ava = document.getElementById('input-avatar').value;
             const wid = document.getElementById('input-widget').value;
-            if(ava) { localStorage.setItem('m_ava_final', ava); document.getElementById('avatar-img').src = ava; }
-            if(wid) { localStorage.setItem('m_wid_final', wid); document.getElementById('widget-display').innerText = wid; }
+            if(wid) { 
+                localStorage.setItem('m_wid_final', wid); 
+                document.getElementById('widget-display').innerText = wid; 
+            }
             toggleSettings();
         }
 
-        // 5. 背景切换
-        const bgs = ['#f9f4f5', '#e5e0e1', '#f0f0f5'];
         function changeBg(i) {
             triggerHaptic();
+            const bgs = ['#f9f4f5', '#e5e0e1', '#f0f0f5'];
             document.body.style.backgroundColor = bgs[i];
-            // 移除自定义背景以恢复系统色调
-            localStorage.removeItem('m_bg_custom');
-        }
-
-        // 6. 头像框切换
-        let fIdx = 0;
-        const fs = ['', 'https://img.icons8.com/color/512/pixel-art--v1.png', 'https://img.icons8.com/stickers/512/star.png'];
-        function nextFrame() {
-            triggerHaptic();
-            fIdx = (fIdx + 1) % fs.length;
-            const el = document.getElementById('frame-overlay');
-            el.src = fs[fIdx];
-            el.style.display = fs[fIdx] ? 'block' : 'none';
         }
     </script>
 </body>
