@@ -3,28 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Mizuki">
+    <title>Mizuki OS</title>
     
     <style>
         :root {
-            --mizuki-main: #FFD1DC;
-            --pixel-border: 3px solid #000;
-            --glass: rgba(255, 255, 255, 0.5);
+            --mizuki-pink: #FFD1DC;
+            --pixel-border: 3.5px solid #000;
+            --glass-white: rgba(255, 255, 255, 0.75);
         }
 
-        * {
-            -webkit-tap-highlight-color: transparent;
-            box-sizing: border-box;
-            user-select: none;
-        }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; user-select: none; }
 
         body {
             margin: 0;
             padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom);
-            background: var(--mizuki-main);
+            background: var(--mizuki-pink);
             background-size: cover;
             background-position: center;
             height: 100vh;
@@ -33,96 +28,113 @@
             align-items: center;
             font-family: -apple-system, sans-serif;
             overflow: hidden;
-            transition: background 0.4s ease;
+            transition: background 0.5s ease;
         }
 
-        /* 顶部模拟状态栏 */
+        /* 状态栏 */
         .status-bar {
             width: 100%;
             display: flex;
             justify-content: space-between;
             padding: 10px 5px;
             font-size: 11px;
-            font-weight: bold;
-            color: #333;
+            font-weight: 900;
             font-family: monospace;
+            color: #333;
         }
 
-        /* 个人信息卡片 (330/兔k风格) */
+        /* 1. 个人卡片：增加条纹细节 */
         .mizuki-card {
-            margin-top: 20px;
+            margin-top: 15px;
             width: 100%;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 35px;
-            padding: 30px 20px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            background-color: var(--glass-white);
+            /* 模拟图1的淡条纹底纹 */
+            background-image: linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
+            background-size: 12px 100%;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 40px;
+            padding: 25px;
+            border: 2px solid #fff;
+            box-shadow: 0 12px 30px rgba(255, 182, 193, 0.3);
             text-align: center;
         }
 
-        .avatar-box {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 15px;
-            cursor: pointer;
-        }
+        .avatar-box { position: relative; width: 90px; height: 90px; margin: 0 auto 12px; }
+        #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 3.5px solid #fff; object-fit: cover; }
+        #frame-overlay { position: absolute; top: -10px; left: -10px; width: 110px; height: 110px; pointer-events: none; }
 
-        #avatar-img {
-            width: 100%; height: 100%;
-            border-radius: 50%;
-            border: 4px solid #fff;
-            object-fit: cover;
-        }
-
-        #frame-overlay {
-            position: absolute;
-            top: -8px; left: -8px;
-            width: 116px; height: 116px;
-            pointer-events: none;
-            display: none;
-        }
-
-        /* 桌面网格 */
-        .desktop-icons {
-            margin-top: auto;
-            margin-bottom: 50px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            width: 100%;
-        }
-
-        .icon-item {
+        /* 2. 中型组件区：解决留白问题 */
+        .middle-container {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            width: 100%;
+            gap: 15px;
+            margin-top: 25px;
+            height: 160px;
         }
 
-        .icon-shape {
-            width: 58px; height: 58px;
+        .main-widget {
+            flex: 1.8;
             background: #fff;
             border: var(--pixel-border);
-            border-radius: 14px;
+            border-radius: 30px;
             display: flex;
-            justify-content: center; align-items: center;
+            justify-content: center;
+            align-items: center;
             font-size: 14px;
             font-weight: bold;
-            box-shadow: 4px 4px 0px #000;
+            box-shadow: 5px 5px 0px rgba(0,0,0,0.05);
         }
 
-        .icon-item:active .icon-shape {
-            transform: translate(2px, 2px);
-            box-shadow: 1px 1px 0px #000;
+        .side-apps {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        .icon-label {
-            margin-top: 8px;
-            font-size: 11px;
+        .small-app-box {
+            flex: 1;
+            background: #fff;
+            border: var(--pixel-border);
+            border-radius: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+        /* 3. 底部 Dock 栏：模仿图1底部的圆润感 */
+        .dock-bar {
+            margin-top: auto;
+            margin-bottom: 35px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 12px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .dock-icon {
+            aspect-ratio: 1/1;
+            background: #fff;
+            border: var(--pixel-border);
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
             font-weight: bold;
+            box-shadow: 3px 3px 0px #000;
         }
+
+        .dock-icon:active { transform: translate(2px, 2px); box-shadow: none; }
 
         /* 设置面板 */
         #settings-panel {
@@ -130,16 +142,10 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.98);
-            z-index: 1000;
-            padding: 50px 30px;
+            background: #fff;
+            z-index: 9999;
+            padding: 60px 30px;
         }
-
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; font-size: 11px; margin-bottom: 8px; font-weight: bold; }
-        .input-group input { width: 100%; padding: 12px; border: var(--pixel-border); border-radius: 8px; outline: none; font-size: 14px; }
-        
-        .btn-save { width: 100%; padding: 15px; background: #000; color: #fff; border: none; border-radius: 12px; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
 <body onclick="triggerHaptic()">
@@ -152,53 +158,56 @@
 
     <div class="mizuki-card" onclick="event.stopPropagation(); nextFrame();">
         <div class="avatar-box">
-            <img id="avatar-img" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Mizuki" alt="Mizuki">
-            <img id="frame-overlay" src="" alt="Frame">
+            <img id="avatar-img" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Mizuki">
+            <img id="frame-overlay" src="" style="display:none;">
         </div>
-        <div style="font-size: 20px; font-weight: 800; letter-spacing: 1px;">瑞希</div>
-        <div style="font-size: 11px; opacity: 0.5; margin-top: 4px;">@mizuki_pwa_827</div>
+        <div style="font-size: 18px; font-weight: 900;">瑞希</div>
+        <div style="font-size: 10px; opacity: 0.5; margin-top: 4px; font-family: monospace;">STAY_REAL_2025</div>
     </div>
 
-    <nav class="desktop-icons">
-        <div class="icon-item" onclick="event.stopPropagation(); changeBg(0)"><div class="icon-shape">PINK</div><span class="icon-label">经典</span></div>
-        <div class="icon-item" onclick="event.stopPropagation(); changeBg(1)"><div class="icon-shape">DARK</div><span class="icon-label">夜色</span></div>
-        <div class="icon-item" onclick="event.stopPropagation(); changeBg(2)"><div class="icon-shape">(*^^*)</div><span class="icon-label">甜点</span></div>
-        <div class="icon-item" onclick="event.stopPropagation(); toggleSettings()"><div class="icon-shape">SET</div><span class="icon-label">设置</span></div>
+    <div class="middle-container">
+        <div class="main-widget" id="widget-display">
+            (*^.^*)
+        </div>
+        <div class="side-apps">
+            <div class="small-app-box">APP 1</div>
+            <div class="small-app-box">APP 2</div>
+        </div>
+    </div>
+
+    <nav class="dock-bar">
+        <div class="dock-icon" onclick="event.stopPropagation(); changeBg(0)">PINK</div>
+        <div class="dock-icon" onclick="event.stopPropagation(); changeBg(1)">DARK</div>
+        <div class="dock-icon" onclick="event.stopPropagation(); changeBg(2)">(^^)</div>
+        <div class="dock-icon" onclick="event.stopPropagation(); toggleSettings()">SET</div>
     </nav>
 
     <div id="settings-panel">
-        <h2 style="text-align:center; letter-spacing: 2px; font-size: 18px;">SETTINGS</h2>
-        <div class="input-group">
-            <label>头像链接 (Avatar URL)</label>
-            <input type="text" id="input-avatar" placeholder="Paste URL here...">
+        <h2 style="text-align:center; font-size: 16px; letter-spacing: 2px;">SYSTEM CONFIG</h2>
+        <div style="margin-top:30px;">
+            <label style="font-size:10px; font-weight:bold;">AVATAR URL</label>
+            <input type="text" id="input-avatar" style="width:100%; padding:12px; border:var(--pixel-border); border-radius:10px; margin-top:5px;">
         </div>
-        <div class="input-group">
-            <label>背景图链接 (BG URL)</label>
-            <input type="text" id="input-bg" placeholder="Paste URL here...">
+        <div style="margin-top:20px;">
+            <label style="font-size:10px; font-weight:bold;">WIDGET TEXT</label>
+            <input type="text" id="input-widget" placeholder="输入颜文字..." style="width:100%; padding:12px; border:var(--pixel-border); border-radius:10px; margin-top:5px;">
         </div>
-        <button class="btn-save" onclick="saveSettings()">SAVE & APPLY</button>
-        <button onclick="toggleSettings()" style="width:100%; background:none; border:none; margin-top:20px; color:#aaa; font-size: 12px;">BACK TO DESKTOP</button>
+        <button onclick="saveSettings()" style="width:100%; padding:15px; background:#000; color:#fff; border:none; border-radius:15px; font-weight:bold; margin-top:30px;">SAVE</button>
+        <button onclick="toggleSettings()" style="width:100%; background:none; border:none; margin-top:20px; color:#aaa; font-size:11px; width:100%;">BACK</button>
     </div>
 
     <script>
-        // 1. 持久化数据初始化
+        // 核心逻辑：持久化存储
         window.onload = function() {
-            const savedAvatar = localStorage.getItem('mizuki_avatar');
-            const savedBg = localStorage.getItem('mizuki_bg');
-            if (savedAvatar) document.getElementById('avatar-img').src = savedAvatar;
-            if (savedBg) {
-                document.body.style.backgroundImage = `url('${savedBg}')`;
-                document.body.style.backgroundSize = 'cover';
-            }
+            const ava = localStorage.getItem('m_ava');
+            const wid = localStorage.getItem('m_wid');
+            if(ava) document.getElementById('avatar-img').src = ava;
+            if(wid) document.getElementById('widget-display').innerText = wid;
             updateTime();
         };
 
-        // 2. 震动反馈 (iOS 需用户初次点击后激活)
-        function triggerHaptic() {
-            if (navigator.vibrate) navigator.vibrate(10);
-        }
+        function triggerHaptic() { if (navigator.vibrate) navigator.vibrate(8); }
 
-        // 3. 动态时间更新
         function updateTime() {
             const now = new Date();
             document.getElementById('live-time').innerText = 
@@ -207,46 +216,35 @@
         }
         setInterval(updateTime, 1000);
 
-        // 4. 设置面板逻辑
         function toggleSettings() {
-            triggerHaptic();
-            const panel = document.getElementById('settings-panel');
-            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            const p = document.getElementById('settings-panel');
+            p.style.display = p.style.display === 'none' ? 'block' : 'none';
         }
 
         function saveSettings() {
             const ava = document.getElementById('input-avatar').value;
-            const bg = document.getElementById('input-bg').value;
-            if(ava) { localStorage.setItem('mizuki_avatar', ava); document.getElementById('avatar-img').src = ava; }
-            if(bg) { 
-                localStorage.setItem('mizuki_bg', bg); 
-                document.body.style.backgroundImage = `url('${bg}')`;
-                document.body.style.backgroundSize = 'cover';
-            }
+            const wid = document.getElementById('input-widget').value;
+            if(ava) { localStorage.setItem('m_ava', ava); document.getElementById('avatar-img').src = ava; }
+            if(wid) { localStorage.setItem('m_wid', wid); document.getElementById('widget-display').innerText = wid; }
             toggleSettings();
         }
 
-        // 5. 快速背景切换 (330机逻辑)
-        const gradients = [
-            'linear-gradient(to bottom, #FFD1DC, #ffffff)',
-            'linear-gradient(to bottom, #D8BFD8, #2F4F4F)',
-            'linear-gradient(to bottom, #FFEFD5, #FFC0CB)'
-        ];
+        // 背景切换
+        const bgs = ['#FFD1DC', '#D8BFD8', '#FFEFD5'];
         function changeBg(i) {
             triggerHaptic();
-            document.body.style.backgroundImage = gradients[i];
-            localStorage.removeItem('mizuki_bg'); // 清除自定义背景，恢复默认
+            document.body.style.background = bgs[i];
         }
 
-        // 6. 头像框循环逻辑
-        let frameIdx = 0;
-        const frames = ['', 'https://img.icons8.com/color/512/pixel-art--v1.png', 'https://img.icons8.com/stickers/512/star.png'];
+        // 头像框逻辑
+        let fIdx = 0;
+        const fs = ['', 'https://img.icons8.com/color/512/pixel-art--v1.png', 'https://img.icons8.com/stickers/512/star.png'];
         function nextFrame() {
             triggerHaptic();
-            frameIdx = (frameIdx + 1) % frames.length;
+            fIdx = (fIdx + 1) % fs.length;
             const el = document.getElementById('frame-overlay');
-            el.src = frames[frameIdx];
-            el.style.display = frames[frameIdx] ? 'block' : 'none';
+            el.src = fs[fIdx];
+            el.style.display = fs[fIdx] ? 'block' : 'none';
         }
     </script>
 </body>
