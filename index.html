@@ -32,10 +32,22 @@
             color: var(--accent-color);
         }
 
+        /* 状态栏：新版电池设计 */
         .status-bar {
-            width: 100%; display: flex; justify-content: space-between;
+            width: 100%; display: flex; justify-content: space-between; align-items: center;
             padding: 10px 5px; font-size: 11px; font-weight: 700; font-family: monospace;
         }
+
+        .battery-container { display: flex; align-items: center; gap: 4px; }
+        .battery-shell {
+            width: 22px; height: 11px; border: 1.5px solid var(--accent-color);
+            border-radius: 3px; position: relative; padding: 1px; opacity: 0.8;
+        }
+        .battery-shell::after {
+            content: ''; position: absolute; right: -3.5px; top: 2.5px;
+            width: 2px; height: 4px; background: var(--accent-color); border-radius: 0 1px 1px 0;
+        }
+        .battery-level { width: 80%; height: 100%; background: var(--accent-color); border-radius: 1px; }
 
         .mizuki-card {
             margin-top: 20px; width: 100%; background: var(--card-bg);
@@ -50,34 +62,32 @@
 
         .middle-container { display: flex; width: 100%; gap: 15px; margin-top: 25px; height: 160px; }
         
-        /* 编辑状态控制：非编辑模式下禁止点击 */
+        /* 核心修复：输入框继承圆角，消除尖角 */
         .editable-input {
             width: 100%; height: 100%; border: none; background: transparent;
             text-align: center; color: var(--accent-color); font-family: inherit;
-            outline: none; font-weight: 700;
-            pointer-events: none; /* 默认锁定，不可点击 */
+            outline: none; font-weight: 700; pointer-events: none;
+            border-radius: inherit; /* 完美贴合外层容器圆角 */
         }
 
-        /* 开启编辑模式时的样式 */
         body.edit-mode .editable-input {
-            pointer-events: auto; /* 允许点击 */
+            pointer-events: auto;
             user-select: text;
-            background: rgba(0,0,0,0.03); /* 淡淡的提示色 */
-            border-bottom: 1px dashed rgba(0,0,0,0.1);
+            background: rgba(0,0,0,0.02);
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05); /* 代替虚线，更沉稳 */
         }
 
-        .main-widget { flex: 1.8; background: rgba(255, 255, 255, 0.85); border-radius: 28px; border: var(--soft-border); display: flex; align-items: center; }
+        .main-widget { flex: 1.8; background: rgba(255, 255, 255, 0.85); border-radius: 28px; border: var(--soft-border); display: flex; align-items: center; overflow: hidden; }
         .side-apps { flex: 1; display: flex; flex-direction: column; gap: 15px; }
-        .small-app-box { flex: 1; background: rgba(255, 255, 255, 0.85); border-radius: 18px; border: var(--soft-border); display: flex; align-items: center; }
+        .small-app-box { flex: 1; background: rgba(255, 255, 255, 0.85); border-radius: 18px; border: var(--soft-border); display: flex; align-items: center; overflow: hidden; }
 
         .dock-bar {
             margin-top: auto; margin-bottom: 40px; width: 85%;
             background: rgba(255, 255, 255, 0.35); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border-radius: 32px; padding: 10px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; border: 1px solid rgba(255, 255, 255, 0.5);
         }
-        .dock-icon { aspect-ratio: 2.2/1; background: #fff; border-radius: 20px; display: flex; align-items: center; border: var(--soft-border); }
+        .dock-icon { aspect-ratio: 2.2/1; background: #fff; border-radius: 20px; display: flex; align-items: center; border: var(--soft-border); overflow: hidden; }
 
-        /* 设置面板 */
         #settings-panel {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(249, 244, 245, 0.8); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
@@ -85,16 +95,12 @@
         }
 
         .settings-card { width: 100%; background: rgba(255, 255, 255, 0.7); border-radius: 30px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.8); }
-        
-        /* 切换开关样式 */
-        .switch-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 5px; }
-        .switch-label { font-size: 13px; font-weight: 800; opacity: 0.7; }
-        .toggle-btn { width: 50px; height: 26px; background: #ccc; border-radius: 13px; position: relative; transition: 0.3s; }
+        .switch-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .toggle-btn { width: 50px; height: 26px; background: #ddd; border-radius: 13px; position: relative; transition: 0.3s; }
         .toggle-btn::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: 0.3s; }
         .toggle-btn.active { background: #8b7d7d; }
         .toggle-btn.active::after { left: 27px; }
 
-        .color-selector { display: flex; gap: 12px; justify-content: center; margin-top: 10px; }
         .color-dot { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; cursor: pointer; }
         .btn-done { width: 100%; padding: 18px; background: var(--accent-color); color: #fff; border: none; border-radius: 22px; font-weight: 800; margin-top: 25px; }
     </style>
@@ -104,7 +110,12 @@
     <div class="status-bar">
         <span>瑞希系统</span>
         <span id="live-time">00:00</span>
-        <span>电量 827%</span>
+        <div class="battery-container">
+            <span style="font-size: 9px; opacity: 0.8;">82%</span>
+            <div class="battery-shell">
+                <div class="battery-level"></div>
+            </div>
+        </div>
     </div>
 
     <div class="mizuki-card">
@@ -137,14 +148,12 @@
         <div style="font-size: 15px; font-weight: 800; margin-bottom: 25px; opacity: 0.8;">系统配置</div>
         <div class="settings-card">
             <div class="switch-group">
-                <span class="switch-label">编辑桌面文字</span>
+                <span style="font-size: 13px; font-weight: 800; opacity: 0.7;">编辑桌面文字</span>
                 <div id="edit-toggle" class="toggle-btn" onclick="toggleEditMode()"></div>
             </div>
-            
             <hr style="border: none; border-top: 1px solid rgba(0,0,0,0.05); margin: 20px 0;">
-            
-            <label style="font-size: 11px; font-weight: 800; opacity: 0.5;">背景颜色</label>
-            <div class="color-selector">
+            <label style="font-size: 11px; font-weight: 800; opacity: 0.5; display: block; margin-bottom: 10px; text-align: center;">背景颜色</label>
+            <div style="display: flex; gap: 12px; justify-content: center;">
                 <div class="color-dot" style="background: #f9f4f5;" onclick="changeBg(0)"></div>
                 <div class="color-dot" style="background: #e5e0e1;" onclick="changeBg(1)"></div>
                 <div class="color-dot" style="background: #f0f0f5;" onclick="changeBg(2)"></div>
@@ -179,24 +188,17 @@
         }
         setInterval(updateTime, 1000);
 
-        // 切换编辑模式
         function toggleEditMode() {
             triggerHaptic();
             isEditMode = !isEditMode;
             const btn = document.getElementById('edit-toggle');
-            if(isEditMode) {
-                btn.classList.add('active');
-                document.body.classList.add('edit-mode');
-            } else {
-                btn.classList.remove('active');
-                document.body.classList.remove('edit-mode');
-            }
+            btn.classList.toggle('active');
+            document.body.classList.toggle('edit-mode');
         }
 
         function saveData() {
             ids.forEach(id => {
-                const val = document.getElementById(id).value;
-                localStorage.setItem('m_text_' + id, val);
+                localStorage.setItem('m_text_' + id, document.getElementById(id).value);
             });
         }
 
