@@ -3,151 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mizuki OS Professional Edition</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mizuki">
+    
     <style>
-        :root { 
-            --primary-accent: #8E9E8E;
-            --input-lift: 48px; 
-            /* 预设背景逻辑 */
-            --default-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        :root {
+            --mizuki-main: #FFD1DC;
+            --pixel-border: 3px solid #000;
+            --glass: rgba(255, 255, 255, 0.5);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; margin: 0; padding: 0; }
-        body, html { height: 100%; overflow: hidden; font-family: -apple-system, sans-serif; background: #000; }
-
-        /* 主屏幕 */
-        #phone-screen { 
-            width: 100%; height: 100%; position: relative; 
-            background: var(--default-gradient);
-            background-size: cover; background-position: center;
-            display: flex; flex-direction: column; align-items: center; 
-            transition: background-image 0.6s ease-in-out;
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+            user-select: none;
         }
 
-        /* 状态栏 & 时间 (针对浅色图加深了颜色) */
-        .status-bar { width: 100%; padding: 12px 24px; display: flex; justify-content: space-between; font-size: 13px; color: #333; font-weight: 700; margin-top: env(safe-area-inset-top); }
-        .time-display { font-size: 80px; font-weight: 200; color: #333; margin-top: 50px; letter-spacing: -2px; }
+        body {
+            margin: 0;
+            padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom);
+            background: var(--mizuki-main);
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: -apple-system, sans-serif;
+            overflow: hidden;
+            transition: background 0.4s ease;
+        }
 
-        /* 桌面图标 */
-        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 40px 24px; width: 100%; }
-        .app-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-        .app-icon { width: 62px; height: 62px; border-radius: 16px; background: rgba(255,255,255,0.9); box-shadow: 0 4px 15px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: center; font-size: 26px; border: 1px solid #fff; }
-        .app-item span { font-size: 12px; color: #444; margin-top: 8px; font-weight: 600; text-shadow: 0 1px 2px rgba(255,255,255,0.8); }
+        /* 顶部模拟状态栏 */
+        .status-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 5px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #333;
+            font-family: monospace;
+        }
 
-        /* 统一视图层 */
-        .view-layer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #F2F2F7; z-index: 1000; flex-direction: column; }
-        .nav-header { padding: 50px 16px 12px; background: #FFF; border-bottom: 0.5px solid #DDD; display: flex; align-items: center; justify-content: space-between; }
-        .nav-btn { color: #007AFF; font-size: 17px; cursor: pointer; }
-        .nav-title { font-size: 17px; font-weight: 600; }
+        /* 个人信息卡片 (330/兔k风格) */
+        .mizuki-card {
+            margin-top: 20px;
+            width: 100%;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 35px;
+            padding: 30px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
 
-        /* 设置卡片 */
-        .menu-list { margin: 20px 16px; background: #FFF; border-radius: 12px; overflow: hidden; }
-        .menu-item { padding: 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.5px solid #F2F2F7; cursor: pointer; }
-        .menu-item:active { background: #F9F9F9; }
+        .avatar-box {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
+            cursor: pointer;
+        }
 
-        /* 保存按钮样式 */
-        .btn-action { width: calc(100% - 32px); margin: 20px 16px; padding: 16px; background: var(--primary-accent); color: #FFF; border: none; border-radius: 12px; font-weight: 600; font-size: 16px; }
+        #avatar-img {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            border: 4px solid #fff;
+            object-fit: cover;
+        }
 
-        /* 聊天气泡 */
-        .chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; background: #EDEDED; }
-        .input-wrap { background: #FFF; padding: 10px 16px calc(var(--input-lift) + env(safe-area-inset-bottom)); display: flex; border-top: 0.5px solid #CCC; }
-        .input-box { flex: 1; background: #F2F2F7; border: none; border-radius: 20px; padding: 10px 16px; font-size: 16px; }
+        #frame-overlay {
+            position: absolute;
+            top: -8px; left: -8px;
+            width: 116px; height: 116px;
+            pointer-events: none;
+            display: none;
+        }
 
-        #toast-box { display: none; position: fixed; bottom: 20%; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: #FFF; padding: 10px 20px; border-radius: 20px; z-index: 9999; }
+        /* 桌面网格 */
+        .desktop-icons {
+            margin-top: auto;
+            margin-bottom: 50px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            width: 100%;
+        }
+
+        .icon-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .icon-shape {
+            width: 58px; height: 58px;
+            background: #fff;
+            border: var(--pixel-border);
+            border-radius: 14px;
+            display: flex;
+            justify-content: center; align-items: center;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 4px 4px 0px #000;
+        }
+
+        .icon-item:active .icon-shape {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #000;
+        }
+
+        .icon-label {
+            margin-top: 8px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        /* 设置面板 */
+        #settings-panel {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            z-index: 1000;
+            padding: 50px 30px;
+        }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 11px; margin-bottom: 8px; font-weight: bold; }
+        .input-group input { width: 100%; padding: 12px; border: var(--pixel-border); border-radius: 8px; outline: none; font-size: 14px; }
+        
+        .btn-save { width: 100%; padding: 15px; background: #000; color: #fff; border: none; border-radius: 12px; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
-<body>
+<body onclick="triggerHaptic()">
 
-<div id="phone-screen">
-    <div class="status-bar"><span>00:00</span><span>📶 100%</span></div>
-    <div class="time-display" id="clock">00:00</div>
-    <div class="app-grid">
-        <div class="app-item" onclick="toggleV('v-msg', true)"><div class="app-icon">💬</div><span>沟通</span></div>
-        <div class="app-item" onclick="toggleV('v-set', true)"><div class="app-icon">⚙️</div><span>设置</span></div>
-    </div>
-</div>
-
-<div id="v-set" class="view-layer">
-    <div class="nav-header"><span class="nav-btn" onclick="toggleV('v-set', false)">退出</span><span class="nav-title">设置</span><span></span></div>
-    <div class="menu-list">
-        <div class="menu-item" onclick="toggleV('s-ui', true)"><span>个性化美化</span><span>></span></div>
-        <div class="menu-item" onclick="toggleV('s-api', true)"><span>API 密钥配置</span><span>></span></div>
+    <div class="status-bar">
+        <span>MIZUKI OS</span>
+        <span id="live-time">00:00</span>
+        <span>BAT 827%</span>
     </div>
 
-    <div id="s-ui" class="view-layer" style="z-index:1100">
-        <div class="nav-header"><span class="nav-btn" onclick="toggleV('s-ui', false)">返回</span><span class="nav-title">视觉美化</span><span></span></div>
-        <div style="padding:16px">
-            <label style="font-size:13px; color:#8e8e93">更换壁纸</label>
-            <input type="file" accept="image/*" onchange="userWallpaper(event)" style="display:block; margin:15px 0">
-            <label style="font-size:13px; color:#8e8e93">底部避让高度</label>
-            <input type="range" min="10" max="150" id="lift-range" style="width:100%; margin:15px 0">
-            <button class="btn-action" onclick="saveUI()">应用并保存设置</button>
-            <button class="btn-action" style="background:#CCC; margin-top:0" onclick="resetSystem()">恢复初始壁纸</button>
+    <div class="mizuki-card" onclick="event.stopPropagation(); nextFrame();">
+        <div class="avatar-box">
+            <img id="avatar-img" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Mizuki" alt="Mizuki">
+            <img id="frame-overlay" src="" alt="Frame">
         </div>
+        <div style="font-size: 20px; font-weight: 800; letter-spacing: 1px;">瑞希</div>
+        <div style="font-size: 11px; opacity: 0.5; margin-top: 4px;">@mizuki_pwa_827</div>
     </div>
-</div>
 
-<div id="v-msg" class="view-layer">
-    <div class="nav-header"><span class="nav-btn" onclick="toggleV('v-msg', false)">返回</span><span class="nav-title">沟通</span><span></span></div>
-    <div id="chat-list" class="chat-container"></div>
-    <div class="input-wrap"><input type="text" id="m-in" class="input-box" placeholder="输入内容..."><button onclick="send()" style="margin-left:10px; color:#007AFF; font-weight:600; border:none; background:none">发送</button></div>
-</div>
+    <nav class="desktop-icons">
+        <div class="icon-item" onclick="event.stopPropagation(); changeBg(0)"><div class="icon-shape">PINK</div><span class="icon-label">经典</span></div>
+        <div class="icon-item" onclick="event.stopPropagation(); changeBg(1)"><div class="icon-shape">DARK</div><span class="icon-label">夜色</span></div>
+        <div class="icon-item" onclick="event.stopPropagation(); changeBg(2)"><div class="icon-shape">(*^^*)</div><span class="icon-label">甜点</span></div>
+        <div class="icon-item" onclick="event.stopPropagation(); toggleSettings()"><div class="icon-shape">SET</div><span class="icon-label">设置</span></div>
+    </nav>
 
-<div id="toast-box">设置已应用</div>
+    <div id="settings-panel">
+        <h2 style="text-align:center; letter-spacing: 2px; font-size: 18px;">SETTINGS</h2>
+        <div class="input-group">
+            <label>头像链接 (Avatar URL)</label>
+            <input type="text" id="input-avatar" placeholder="Paste URL here...">
+        </div>
+        <div class="input-group">
+            <label>背景图链接 (BG URL)</label>
+            <input type="text" id="input-bg" placeholder="Paste URL here...">
+        </div>
+        <button class="btn-save" onclick="saveSettings()">SAVE & APPLY</button>
+        <button onclick="toggleSettings()" style="width:100%; background:none; border:none; margin-top:20px; color:#aaa; font-size: 12px;">BACK TO DESKTOP</button>
+    </div>
 
-<script>
-    // 【关键】大佬，这里是你要的初始背景图链接，如果还是白屏，我会教你用 Base64
-    const DEFAULT_WALLPAPER = "https://r.jina.ai/i/429486c761c54e09be04407887376092";
-
-    function updateTime() {
-        const d = new Date();
-        const t = d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
-        document.getElementById('clock').innerText = t;
-    }
-    setInterval(updateTime, 1000); updateTime();
-
-    function toggleV(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
-
-    function userWallpaper(e) {
-        const f = e.target.files[0];
-        const r = new FileReader();
-        r.onload = (ev) => {
-            document.getElementById('phone-screen').style.backgroundImage = `url(${ev.target.result})`;
-            localStorage.setItem('m_custom_bg', ev.target.result);
+    <script>
+        // 1. 持久化数据初始化
+        window.onload = function() {
+            const savedAvatar = localStorage.getItem('mizuki_avatar');
+            const savedBg = localStorage.getItem('mizuki_bg');
+            if (savedAvatar) document.getElementById('avatar-img').src = savedAvatar;
+            if (savedBg) {
+                document.body.style.backgroundImage = `url('${savedBg}')`;
+                document.body.style.backgroundSize = 'cover';
+            }
+            updateTime();
         };
-        r.readAsDataURL(f);
-    }
 
-    function saveUI() {
-        const h = document.getElementById('lift-range').value;
-        localStorage.setItem('m_lift', h);
-        document.documentElement.style.setProperty('--input-lift', h + 'px');
-        const box = document.getElementById('toast-box');
-        box.style.display = 'block'; setTimeout(()=>box.style.display='none', 2000);
-    }
+        // 2. 震动反馈 (iOS 需用户初次点击后激活)
+        function triggerHaptic() {
+            if (navigator.vibrate) navigator.vibrate(10);
+        }
 
-    function resetSystem() {
-        localStorage.removeItem('m_custom_bg');
-        document.getElementById('phone-screen').style.backgroundImage = `url(${DEFAULT_WALLPAPER})`;
-    }
+        // 3. 动态时间更新
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('live-time').innerText = 
+                now.getHours().toString().padStart(2, '0') + ":" + 
+                now.getMinutes().toString().padStart(2, '0');
+        }
+        setInterval(updateTime, 1000);
 
-    function send() {
-        const i = document.getElementById('m-in'); if(!i.value) return;
-        const d = document.createElement('div');
-        d.style = "align-self:flex-end; background:#95EC69; padding:10px 15px; border-radius:15px; margin-bottom:10px; max-width:80%; font-size:15px";
-        d.innerText = i.value;
-        document.getElementById('chat-list').appendChild(d);
-        i.value = '';
-    }
+        // 4. 设置面板逻辑
+        function toggleSettings() {
+            triggerHaptic();
+            const panel = document.getElementById('settings-panel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
 
-    window.onload = () => {
-        // 逻辑：优先读用户自定义，没有就读 DEFAULT_WALLPAPER
-        const custom = localStorage.getItem('m_custom_bg');
-        document.getElementById('phone-screen').style.backgroundImage = `url(${custom || DEFAULT_WALLPAPER})`;
-        const lift = localStorage.getItem('m_lift') || '48';
-        document.getElementById('lift-range').value = lift;
-        document.documentElement.style.setProperty('--input-lift', lift + 'px');
-    };
-</script>
+        function saveSettings() {
+            const ava = document.getElementById('input-avatar').value;
+            const bg = document.getElementById('input-bg').value;
+            if(ava) { localStorage.setItem('mizuki_avatar', ava); document.getElementById('avatar-img').src = ava; }
+            if(bg) { 
+                localStorage.setItem('mizuki_bg', bg); 
+                document.body.style.backgroundImage = `url('${bg}')`;
+                document.body.style.backgroundSize = 'cover';
+            }
+            toggleSettings();
+        }
+
+        // 5. 快速背景切换 (330机逻辑)
+        const gradients = [
+            'linear-gradient(to bottom, #FFD1DC, #ffffff)',
+            'linear-gradient(to bottom, #D8BFD8, #2F4F4F)',
+            'linear-gradient(to bottom, #FFEFD5, #FFC0CB)'
+        ];
+        function changeBg(i) {
+            triggerHaptic();
+            document.body.style.backgroundImage = gradients[i];
+            localStorage.removeItem('mizuki_bg'); // 清除自定义背景，恢复默认
+        }
+
+        // 6. 头像框循环逻辑
+        let frameIdx = 0;
+        const frames = ['', 'https://img.icons8.com/color/512/pixel-art--v1.png', 'https://img.icons8.com/stickers/512/star.png'];
+        function nextFrame() {
+            triggerHaptic();
+            frameIdx = (frameIdx + 1) % frames.length;
+            const el = document.getElementById('frame-overlay');
+            el.src = frames[frameIdx];
+            el.style.display = frames[frameIdx] ? 'block' : 'none';
+        }
+    </script>
 </body>
 </html>
