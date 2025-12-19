@@ -77,22 +77,22 @@
         .side-apps { flex: 1; display: flex; flex-direction: column; gap: 15px; }
         .small-app-box { flex: 1; background: rgba(255, 255, 255, 0.85); border-radius: 18px; border: var(--soft-border); display: flex; justify-content: center; align-items: center; font-size: 10px; font-weight: 700; }
 
-        /* 底部 Dock */
+        /* 底部 Dock 栏 (改为 2 列更显简约) */
         .dock-bar {
             margin-top: auto;
             margin-bottom: 40px;
-            width: 100%;
+            width: 80%; /* 缩窄一点更精致 */
             background: rgba(255, 255, 255, 0.35);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border-radius: 32px;
             padding: 10px;
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             border: 1px solid rgba(255, 255, 255, 0.5);
         }
-        .dock-icon { aspect-ratio: 1/1; background: #fff; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 11px; font-weight: 600; border: var(--soft-border); }
+        .dock-icon { aspect-ratio: 2/1; background: #fff; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 600; border: var(--soft-border); }
 
         /* 设置面板 */
         #settings-panel {
@@ -116,33 +116,34 @@
             padding: 25px;
             border: 1px solid rgba(255, 255, 255, 0.8);
             box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
-        .settings-title {
-            font-size: 15px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            margin-bottom: 25px;
-            text-align: center;
-            opacity: 0.8;
-        }
+        .settings-title { font-size: 15px; font-weight: 800; letter-spacing: 2px; margin-bottom: 25px; opacity: 0.8; }
 
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 11px; font-weight: 800; margin-bottom: 8px; opacity: 0.5; text-indent: 5px; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 11px; font-weight: 800; margin-bottom: 10px; opacity: 0.5; }
         .input-group input { 
-            width: 100%; padding: 16px; 
-            border: var(--soft-border); border-radius: 18px; 
-            background: rgba(255, 255, 255, 0.5); 
-            outline: none; font-size: 14px; color: var(--accent-color);
+            width: 100%; padding: 16px; border: var(--soft-border); border-radius: 18px; 
+            background: rgba(255, 255, 255, 0.5); outline: none; font-size: 14px; color: var(--accent-color);
         }
 
-        .btn-done { 
-            width: 100%; padding: 18px; 
-            background: var(--accent-color); 
-            color: #fff; border: none; border-radius: 22px; 
-            font-weight: 800; font-size: 14px; letter-spacing: 1px;
+        /* 颜色选择器布局 */
+        .color-selector {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 5px;
         }
+        .color-dot {
+            width: 35px; height: 35px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+
+        .btn-done { width: 100%; padding: 18px; background: var(--accent-color); color: #fff; border: none; border-radius: 22px; font-weight: 800; font-size: 14px; }
         .btn-cancel { margin-top: 20px; background: none; border: none; color: var(--accent-color); opacity: 0.4; font-size: 13px; font-weight: 600; }
     </style>
 </head>
@@ -155,7 +156,7 @@
     </div>
 
     <div class="mizuki-card">
-        <div class="avatar-box" onclick="event.stopPropagation(); document.getElementById('file-input').click();" title="点击更换头像">
+        <div class="avatar-box" onclick="event.stopPropagation(); document.getElementById('file-input').click();">
             <img id="avatar-img" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Mizuki">
         </div>
         <input type="file" id="file-input" accept="image/*" onchange="handleFile(this)">
@@ -172,9 +173,7 @@
     </div>
 
     <nav class="dock-bar">
-        <div class="dock-icon" onclick="event.stopPropagation(); changeBg(0)">浅粉</div>
-        <div class="dock-icon" onclick="event.stopPropagation(); changeBg(1)">深灰</div>
-        <div class="dock-icon" onclick="event.stopPropagation(); changeBg(2)">柔和</div>
+        <div class="dock-icon" onclick="event.stopPropagation();">应用</div>
         <div class="dock-icon" onclick="event.stopPropagation(); toggleSettings()">设置</div>
     </nav>
 
@@ -183,15 +182,21 @@
         
         <div class="settings-card">
             <div class="input-group">
-                <label>组件文字 / 颜文字</label>
+                <label>个性化文字</label>
                 <input type="text" id="input-widget" placeholder="输入你想显示的文字...">
             </div>
-            <div style="font-size: 10px; opacity: 0.4; text-align: center; margin-top: 10px;">
-                提示：在主页点击头像可直接更换照片
+            
+            <div class="input-group" style="margin-bottom: 5px;">
+                <label>配色方案</label>
+                <div class="color-selector">
+                    <div class="color-dot" style="background: #f9f4f5;" onclick="changeBg(0)"></div>
+                    <div class="color-dot" style="background: #e5e0e1;" onclick="changeBg(1)"></div>
+                    <div class="color-dot" style="background: #f0f0f5;" onclick="changeBg(2)"></div>
+                </div>
             </div>
         </div>
 
-        <button class="btn-done" onclick="saveSettings()">完成</button>
+        <button class="btn-done" onclick="saveSettings()">保存修改</button>
         <button class="btn-cancel" onclick="toggleSettings()">取消</button>
     </div>
 
@@ -199,8 +204,10 @@
         window.onload = function() {
             const ava = localStorage.getItem('m_ava_local');
             const wid = localStorage.getItem('m_wid_final');
+            const bg = localStorage.getItem('m_bg_choice');
             if(ava) document.getElementById('avatar-img').src = ava;
             if(wid) document.getElementById('widget-display').innerText = wid;
+            if(bg) document.body.style.backgroundColor = bg;
             updateTime();
         };
 
@@ -247,6 +254,7 @@
             triggerHaptic();
             const bgs = ['#f9f4f5', '#e5e0e1', '#f0f0f5'];
             document.body.style.backgroundColor = bgs[i];
+            localStorage.setItem('m_bg_choice', bgs[i]);
         }
     </script>
 </body>
