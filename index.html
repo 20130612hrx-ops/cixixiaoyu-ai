@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Mizuki">
+    <meta name="apple-mobile-web-app-title" content="瑞希手机">
     
     <style>
         :root {
@@ -27,13 +27,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-family: -apple-system, sans-serif;
+            font-family: -apple-system, "PingFang SC", sans-serif;
             overflow: hidden;
             transition: background 0.5s ease;
             color: var(--accent-color);
         }
 
-        /* 顶部状态栏 */
+        /* 状态栏 */
         .status-bar {
             width: 100%;
             display: flex;
@@ -94,13 +94,13 @@
         }
         .dock-icon { aspect-ratio: 1/1; background: #fff; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 11px; font-weight: 600; border: var(--soft-border); }
 
-        /* --- 优化后的设置面板 --- */
+        /* 设置面板 */
         #settings-panel {
             display: none;
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(249, 244, 245, 0.8); /* 柔和的底色 */
+            background: rgba(249, 244, 245, 0.8);
             backdrop-filter: blur(40px) saturate(150%);
             -webkit-backdrop-filter: blur(40px) saturate(150%);
             z-index: 9999;
@@ -120,7 +120,7 @@
         }
 
         .settings-title {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 800;
             letter-spacing: 2px;
             margin-bottom: 25px;
@@ -129,73 +129,70 @@
         }
 
         .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 10px; font-weight: 800; margin-bottom: 8px; opacity: 0.5; text-indent: 5px; }
+        .input-group label { display: block; font-size: 11px; font-weight: 800; margin-bottom: 8px; opacity: 0.5; text-indent: 5px; }
         .input-group input { 
             width: 100%; padding: 16px; 
             border: var(--soft-border); border-radius: 18px; 
             background: rgba(255, 255, 255, 0.5); 
             outline: none; font-size: 14px; color: var(--accent-color);
-            transition: background 0.3s;
         }
-        .input-group input:focus { background: #fff; }
 
         .btn-done { 
             width: 100%; padding: 18px; 
             background: var(--accent-color); 
             color: #fff; border: none; border-radius: 22px; 
-            font-weight: 800; font-size: 13px; letter-spacing: 1px;
-            box-shadow: 0 5px 15px rgba(139, 125, 125, 0.2);
+            font-weight: 800; font-size: 14px; letter-spacing: 1px;
         }
-        .btn-cancel { margin-top: 20px; background: none; border: none; color: var(--accent-color); opacity: 0.4; font-size: 12px; font-weight: 600; }
+        .btn-cancel { margin-top: 20px; background: none; border: none; color: var(--accent-color); opacity: 0.4; font-size: 13px; font-weight: 600; }
     </style>
 </head>
 <body onclick="triggerHaptic()">
 
     <div class="status-bar">
-        <span>MIZUKI OS</span>
+        <span>瑞希系统</span>
         <span id="live-time">00:00</span>
-        <span>BAT 827%</span>
+        <span>电量 827%</span>
     </div>
 
     <div class="mizuki-card">
-        <div class="avatar-box" onclick="event.stopPropagation(); document.getElementById('file-input').click();">
+        <div class="avatar-box" onclick="event.stopPropagation(); document.getElementById('file-input').click();" title="点击更换头像">
             <img id="avatar-img" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Mizuki">
         </div>
         <input type="file" id="file-input" accept="image/*" onchange="handleFile(this)">
         <div style="font-size: 19px; font-weight: 800; letter-spacing: 0.5px;">瑞希</div>
-        <div style="font-size: 10px; opacity: 0.4; margin-top: 5px; font-family: monospace;">@STAY_REAL_2025</div>
+        <div style="font-size: 10px; opacity: 0.4; margin-top: 5px; font-family: monospace;">保持真实 · 2025</div>
     </div>
 
     <div class="middle-container">
         <div class="main-widget" id="widget-display">(*^.^*)</div>
         <div class="side-apps">
-            <div class="small-app-box">PIXEL</div>
-            <div class="small-app-box">PHOTO</div>
+            <div class="small-app-box">像素</div>
+            <div class="small-app-box">相册</div>
         </div>
     </div>
 
     <nav class="dock-bar">
-        <div class="dock-icon" onclick="event.stopPropagation(); changeBg(0)">PINK</div>
-        <div class="dock-icon" onclick="event.stopPropagation(); changeBg(1)">DARK</div>
-        <div class="dock-icon" onclick="event.stopPropagation(); changeBg(2)">SOFT</div>
-        <div class="dock-icon" onclick="event.stopPropagation(); toggleSettings()">SET</div>
+        <div class="dock-icon" onclick="event.stopPropagation(); changeBg(0)">浅粉</div>
+        <div class="dock-icon" onclick="event.stopPropagation(); changeBg(1)">深灰</div>
+        <div class="dock-icon" onclick="event.stopPropagation(); changeBg(2)">柔和</div>
+        <div class="dock-icon" onclick="event.stopPropagation(); toggleSettings()">设置</div>
     </nav>
 
     <div id="settings-panel">
-        <div class="settings-title">SYSTEM CONFIG</div>
+        <div class="settings-title">系统配置</div>
         
         <div class="settings-card">
             <div class="input-group">
-                <label>WIDGET TEXT</label>
-                <input type="text" id="input-widget" placeholder="Enter text or emoji...">
+                <label>组件文字 / 颜文字</label>
+                <input type="text" id="input-widget" placeholder="输入你想显示的文字...">
             </div>
-            <div style="font-size: 9px; opacity: 0.4; text-align: center; margin-top: 10px;">
-                Tip: Click avatar on home to change photo
+            <div style="font-size: 10px; opacity: 0.4; text-align: center; margin-top: 10px;">
+                提示：在主页点击头像可直接更换照片
             </div>
         </div>
 
-        <button class="btn-done" onclick="saveSettings()">DONE</button>
-        <button class="btn-cancel" onclick="toggleSettings()">CANCEL</button>
+        <button class="btn-done" onclick="saveSettings()">完成</button>
+        <button class="btn-cancel" onclick="toggleSettings()">取消</button>
     </div>
 
     <script>
