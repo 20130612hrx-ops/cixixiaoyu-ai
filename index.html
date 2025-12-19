@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="瑞希手机">
     
     <style>
         :root {
@@ -33,128 +32,71 @@
             color: var(--accent-color);
         }
 
-        /* 状态栏 */
         .status-bar {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 5px;
-            font-size: 11px;
-            font-weight: 700;
-            font-family: monospace;
+            width: 100%; display: flex; justify-content: space-between;
+            padding: 10px 5px; font-size: 11px; font-weight: 700; font-family: monospace;
         }
 
-        /* 个人卡片 */
         .mizuki-card {
-            margin-top: 20px;
-            width: 100%;
-            background: var(--card-bg);
-            background-image: linear-gradient(90deg, rgba(0,0,0,0.01) 1px, transparent 1px);
-            background-size: 12px 100%;
-            backdrop-filter: blur(25px) saturate(180%);
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
-            border-radius: 38px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
-            text-align: center;
+            margin-top: 20px; width: 100%; background: var(--card-bg);
+            backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border-radius: 38px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04); text-align: center;
         }
 
-        .avatar-box {
-            position: relative;
-            width: 90px; height: 90px;
-            margin: 0 auto 12px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .avatar-box:active { transform: scale(0.95); }
-        #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.06); object-fit: cover; }
+        .avatar-box { width: 90px; height: 90px; margin: 0 auto 12px; cursor: pointer; transition: transform 0.2s; }
+        #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #fff; object-fit: cover; }
         #file-input { display: none; }
 
-        /* 中间组件区 */
         .middle-container { display: flex; width: 100%; gap: 15px; margin-top: 25px; height: 160px; }
         
-        /* 核心改动：可直接编辑的颜文字组件 */
-        .main-widget { 
-            flex: 1.8; 
-            background: rgba(255, 255, 255, 0.85); 
-            border-radius: 28px; 
-            border: var(--soft-border); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
-            position: relative;
-            overflow: hidden;
+        /* 编辑状态控制：非编辑模式下禁止点击 */
+        .editable-input {
+            width: 100%; height: 100%; border: none; background: transparent;
+            text-align: center; color: var(--accent-color); font-family: inherit;
+            outline: none; font-weight: 700;
+            pointer-events: none; /* 默认锁定，不可点击 */
         }
 
-        #widget-input {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: transparent;
-            text-align: center;
-            font-size: 16px;
-            color: var(--accent-color);
-            font-family: inherit;
-            outline: none;
-            user-select: text; /* 允许文本输入 */
-            padding: 10px;
+        /* 开启编辑模式时的样式 */
+        body.edit-mode .editable-input {
+            pointer-events: auto; /* 允许点击 */
+            user-select: text;
+            background: rgba(0,0,0,0.03); /* 淡淡的提示色 */
+            border-bottom: 1px dashed rgba(0,0,0,0.1);
         }
 
+        .main-widget { flex: 1.8; background: rgba(255, 255, 255, 0.85); border-radius: 28px; border: var(--soft-border); display: flex; align-items: center; }
         .side-apps { flex: 1; display: flex; flex-direction: column; gap: 15px; }
-        .small-app-box { flex: 1; background: rgba(255, 255, 255, 0.85); border-radius: 18px; border: var(--soft-border); display: flex; justify-content: center; align-items: center; font-size: 10px; font-weight: 700; }
+        .small-app-box { flex: 1; background: rgba(255, 255, 255, 0.85); border-radius: 18px; border: var(--soft-border); display: flex; align-items: center; }
 
-        /* 底部 Dock 栏 */
         .dock-bar {
-            margin-top: auto;
-            margin-bottom: 40px;
-            width: 80%;
-            background: rgba(255, 255, 255, 0.35);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-radius: 32px;
-            padding: 10px;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            margin-top: auto; margin-bottom: 40px; width: 85%;
+            background: rgba(255, 255, 255, 0.35); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-radius: 32px; padding: 10px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; border: 1px solid rgba(255, 255, 255, 0.5);
         }
-        .dock-icon { aspect-ratio: 2/1; background: #fff; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 600; border: var(--soft-border); }
+        .dock-icon { aspect-ratio: 2.2/1; background: #fff; border-radius: 20px; display: flex; align-items: center; border: var(--soft-border); }
 
-        /* 设置面板 (已删减个性化文字输入) */
+        /* 设置面板 */
         #settings-panel {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(249, 244, 245, 0.8);
-            backdrop-filter: blur(40px) saturate(150%);
-            -webkit-backdrop-filter: blur(40px) saturate(150%);
-            z-index: 9999;
-            padding: 80px 30px;
-            flex-direction: column;
-            align-items: center;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(249, 244, 245, 0.8); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+            z-index: 9999; padding: 60px 30px; flex-direction: column; align-items: center;
         }
 
-        .settings-card {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 30px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-            margin-bottom: 20px;
-        }
+        .settings-card { width: 100%; background: rgba(255, 255, 255, 0.7); border-radius: 30px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.8); }
+        
+        /* 切换开关样式 */
+        .switch-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 5px; }
+        .switch-label { font-size: 13px; font-weight: 800; opacity: 0.7; }
+        .toggle-btn { width: 50px; height: 26px; background: #ccc; border-radius: 13px; position: relative; transition: 0.3s; }
+        .toggle-btn::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: 0.3s; }
+        .toggle-btn.active { background: #8b7d7d; }
+        .toggle-btn.active::after { left: 27px; }
 
-        .settings-title { font-size: 15px; font-weight: 800; letter-spacing: 2px; margin-bottom: 25px; opacity: 0.8; }
-
-        .input-group label { display: block; font-size: 11px; font-weight: 800; margin-bottom: 12px; opacity: 0.5; text-align: center; }
-
-        .color-selector { display: flex; gap: 15px; justify-content: center; }
-        .color-dot { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.05); cursor: pointer; }
-
-        .btn-done { width: 100%; padding: 18px; background: var(--accent-color); color: #fff; border: none; border-radius: 22px; font-weight: 800; font-size: 14px; }
+        .color-selector { display: flex; gap: 12px; justify-content: center; margin-top: 10px; }
+        .color-dot { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; cursor: pointer; }
+        .btn-done { width: 100%; padding: 18px; background: var(--accent-color); color: #fff; border: none; border-radius: 22px; font-weight: 800; margin-top: 25px; }
     </style>
 </head>
 <body onclick="triggerHaptic()">
@@ -170,52 +112,59 @@
             <img id="avatar-img" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Mizuki">
         </div>
         <input type="file" id="file-input" accept="image/*" onchange="handleFile(this)">
-        <div style="font-size: 19px; font-weight: 800; letter-spacing: 0.5px;">瑞希</div>
-        <div style="font-size: 10px; opacity: 0.4; margin-top: 5px; font-family: monospace;">保持真实 · 2025</div>
+        <div style="font-size: 19px; font-weight: 800;">瑞希</div>
+        <div style="font-size: 10px; opacity: 0.4; margin-top: 5px;">保持真实 · 2025</div>
     </div>
 
     <div class="middle-container">
         <div class="main-widget">
-            <input type="text" id="widget-input" value="(*^.^*)" onblur="saveWidgetText()" onfocus="triggerHaptic()">
+            <input type="text" class="editable-input" id="in-main" value="(*^.^*)" onblur="saveData()" style="font-size:16px;">
         </div>
         <div class="side-apps">
-            <div class="small-app-box">像素</div>
-            <div class="small-app-box">相册</div>
+            <div class="small-app-box"><input type="text" class="editable-input" id="in-sub1" value="像素" onblur="saveData()" style="font-size:11px;"></div>
+            <div class="small-app-box"><input type="text" class="editable-input" id="in-sub2" value="相册" onblur="saveData()" style="font-size:11px;"></div>
         </div>
     </div>
 
     <nav class="dock-bar">
-        <div class="dock-icon">应用</div>
-        <div class="dock-icon" onclick="event.stopPropagation(); toggleSettings()">设置</div>
+        <div class="dock-icon"><input type="text" class="editable-input" id="in-dock" value="应用" onblur="saveData()" style="font-size:12px;"></div>
+        <div class="dock-icon" onclick="event.stopPropagation(); toggleSettings()">
+            <div style="width:100%; text-align:center; font-size:12px; font-weight:600;">设置</div>
+        </div>
     </nav>
 
     <div id="settings-panel">
-        <div class="settings-title">系统配置</div>
-        
+        <div style="font-size: 15px; font-weight: 800; margin-bottom: 25px; opacity: 0.8;">系统配置</div>
         <div class="settings-card">
-            <div class="input-group">
-                <label>切换配色方案</label>
-                <div class="color-selector">
-                    <div class="color-dot" style="background: #f9f4f5;" onclick="changeBg(0)"></div>
-                    <div class="color-dot" style="background: #e5e0e1;" onclick="changeBg(1)"></div>
-                    <div class="color-dot" style="background: #f0f0f5;" onclick="changeBg(2)"></div>
-                </div>
+            <div class="switch-group">
+                <span class="switch-label">编辑桌面文字</span>
+                <div id="edit-toggle" class="toggle-btn" onclick="toggleEditMode()"></div>
             </div>
-            <div style="font-size: 10px; opacity: 0.4; text-align: center; margin-top: 15px;">
-                提示：直接点击桌面文字或头像即可修改
+            
+            <hr style="border: none; border-top: 1px solid rgba(0,0,0,0.05); margin: 20px 0;">
+            
+            <label style="font-size: 11px; font-weight: 800; opacity: 0.5;">背景颜色</label>
+            <div class="color-selector">
+                <div class="color-dot" style="background: #f9f4f5;" onclick="changeBg(0)"></div>
+                <div class="color-dot" style="background: #e5e0e1;" onclick="changeBg(1)"></div>
+                <div class="color-dot" style="background: #f0f0f5;" onclick="changeBg(2)"></div>
             </div>
         </div>
-
         <button class="btn-done" onclick="toggleSettings()">返回桌面</button>
     </div>
 
     <script>
+        const ids = ['in-main', 'in-sub1', 'in-sub2', 'in-dock'];
+        let isEditMode = false;
+
         window.onload = function() {
+            ids.forEach(id => {
+                const saved = localStorage.getItem('m_text_' + id);
+                if(saved) document.getElementById(id).value = saved;
+            });
             const ava = localStorage.getItem('m_ava_local');
-            const wid = localStorage.getItem('m_wid_final');
             const bg = localStorage.getItem('m_bg_choice');
             if(ava) document.getElementById('avatar-img').src = ava;
-            if(wid) document.getElementById('widget-input').value = wid;
             if(bg) document.body.style.backgroundColor = bg;
             updateTime();
         };
@@ -230,10 +179,25 @@
         }
         setInterval(updateTime, 1000);
 
-        // 保存颜文字修改
-        function saveWidgetText() {
-            const val = document.getElementById('widget-input').value;
-            localStorage.setItem('m_wid_final', val);
+        // 切换编辑模式
+        function toggleEditMode() {
+            triggerHaptic();
+            isEditMode = !isEditMode;
+            const btn = document.getElementById('edit-toggle');
+            if(isEditMode) {
+                btn.classList.add('active');
+                document.body.classList.add('edit-mode');
+            } else {
+                btn.classList.remove('active');
+                document.body.classList.remove('edit-mode');
+            }
+        }
+
+        function saveData() {
+            ids.forEach(id => {
+                const val = document.getElementById(id).value;
+                localStorage.setItem('m_text_' + id, val);
+            });
         }
 
         function handleFile(input) {
@@ -242,9 +206,8 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const base64Data = e.target.result;
-                    document.getElementById('avatar-img').src = base64Data;
-                    localStorage.setItem('m_ava_local', base64Data);
+                    document.getElementById('avatar-img').src = e.target.result;
+                    localStorage.setItem('m_ava_local', e.target.result);
                 };
                 reader.readAsDataURL(file);
             }
