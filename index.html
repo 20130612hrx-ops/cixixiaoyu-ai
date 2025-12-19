@@ -32,7 +32,7 @@
             color: var(--accent-color);
         }
 
-        /* --- 稳定的 iPhone 顶栏 --- */
+        /* --- iPhone 顶栏 --- */
         .status-bar {
             width: 100%; height: 44px; display: flex; justify-content: space-between; align-items: center;
             padding: 0 4px; font-size: 12px; font-weight: 600;
@@ -46,7 +46,7 @@
         .battery-shell::after { content: ''; position: absolute; right: -3px; top: 2.5px; width: 1.5px; height: 4px; background: var(--accent-color); border-radius: 0 1px 1px 0; }
         .battery-level { width: 85%; height: 100%; background: var(--accent-color); border-radius: 1px; }
 
-        /* --- 个人卡片与签名 (修正为固定宽度) --- */
+        /* --- 个人卡片与签名 --- */
         .mizuki-card {
             margin-top: 20px; width: 100%; background: var(--card-bg);
             backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%);
@@ -56,43 +56,38 @@
         .avatar-box { width: 90px; height: 90px; margin: 0 auto 12px; cursor: pointer; }
         #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #fff; object-fit: cover; }
         
-        .signature-box {
-            display: flex; align-items: center; justify-content: center;
-            margin-top: 8px; gap: 6px;
-            width: 100%; /* 固定宽度防止抖动 */
-        }
+        .signature-box { display: flex; justify-content: center; margin-top: 8px; width: 100%; }
+        
+        /* 签名输入框：固定宽度，去掉外部干扰 */
         .sig-input {
             background: transparent; border: none; outline: none;
             color: var(--accent-color); font-size: 10px; opacity: 0.4;
             font-family: monospace; text-align: center; 
-            width: 150px; /* 使用固定宽度，不再收缩 */
-            pointer-events: none; border-radius: 4px;
+            width: 180px; pointer-events: none; border-radius: 6px;
             transition: all 0.2s;
         }
-        .edit-icon { 
-            font-size: 8px; opacity: 0; transition: 0.3s; font-style: normal;
-            border: 0.8px solid var(--accent-color); border-radius: 3px; padding: 0 3px;
-            flex-shrink: 0;
-        }
 
-        /* --- 编辑模式全局样式 --- */
-        body.edit-mode .editable-input, 
-        body.edit-mode .sig-input {
-            pointer-events: auto; user-select: text; background: rgba(0,0,0,0.02);
-            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
-        }
-        body.edit-mode .edit-icon { opacity: 0.3; }
-
-        /* --- 中间组件与底部 (保持原封不动) --- */
-        .middle-container { display: flex; width: 100%; gap: 15px; margin-top: 25px; height: 160px; }
+        /* --- 编辑模式样式 (统一组件逻辑) --- */
         .editable-input {
             width: 100%; height: 100%; border: none; background: transparent;
             text-align: center; color: var(--accent-color); font-family: inherit;
             outline: none; font-weight: 700; pointer-events: none; border-radius: inherit;
         }
+
+        /* 开启编辑时的视觉提示：统一浅色背景，去除尖角 */
+        body.edit-mode .editable-input, 
+        body.edit-mode .sig-input {
+            pointer-events: auto; user-select: text; 
+            background: rgba(0,0,0,0.025);
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
+        }
+
+        /* --- 桌面组件布局 --- */
+        .middle-container { display: flex; width: 100%; gap: 15px; margin-top: 25px; height: 160px; }
         .main-widget { flex: 1.8; background: rgba(255, 255, 255, 0.85); border-radius: 28px; border: var(--soft-border); display: flex; align-items: center; overflow: hidden; }
         .side-apps { flex: 1; display: flex; flex-direction: column; gap: 15px; }
         .small-app-box { flex: 1; background: rgba(255, 255, 255, 0.85); border-radius: 18px; border: var(--soft-border); display: flex; align-items: center; overflow: hidden; }
+        
         .dock-bar {
             margin-top: auto; margin-bottom: 40px; width: 85%;
             background: rgba(255, 255, 255, 0.35); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -136,7 +131,6 @@
         
         <div class="signature-box">
             <input type="text" class="sig-input" id="in-sig" value="保持真实 · 2025" onblur="saveData()">
-            <i class="edit-icon">EDIT</i>
         </div>
     </div>
 
