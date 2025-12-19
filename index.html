@@ -32,7 +32,7 @@
             color: var(--accent-color);
         }
 
-        /* --- iPhone 顶栏 --- */
+        /* --- 稳定的 iPhone 顶栏 --- */
         .status-bar {
             width: 100%; height: 44px; display: flex; justify-content: space-between; align-items: center;
             padding: 0 4px; font-size: 12px; font-weight: 600;
@@ -46,7 +46,7 @@
         .battery-shell::after { content: ''; position: absolute; right: -3px; top: 2.5px; width: 1.5px; height: 4px; background: var(--accent-color); border-radius: 0 1px 1px 0; }
         .battery-level { width: 85%; height: 100%; background: var(--accent-color); border-radius: 1px; }
 
-        /* --- 个人卡片与签名 --- */
+        /* --- 个人卡片与签名 (修正为固定宽度) --- */
         .mizuki-card {
             margin-top: 20px; width: 100%; background: var(--card-bg);
             backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%);
@@ -55,23 +55,24 @@
         }
         .avatar-box { width: 90px; height: 90px; margin: 0 auto 12px; cursor: pointer; }
         #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #fff; object-fit: cover; }
-        #file-input { display: none; }
-
-        /* 签名区域布局 */
+        
         .signature-box {
             display: flex; align-items: center; justify-content: center;
-            margin-top: 8px; gap: 4px;
+            margin-top: 8px; gap: 6px;
+            width: 100%; /* 固定宽度防止抖动 */
         }
         .sig-input {
             background: transparent; border: none; outline: none;
             color: var(--accent-color); font-size: 10px; opacity: 0.4;
-            font-family: monospace; text-align: center; width: auto;
-            min-width: 20px; pointer-events: none; border-radius: 4px;
+            font-family: monospace; text-align: center; 
+            width: 150px; /* 使用固定宽度，不再收缩 */
+            pointer-events: none; border-radius: 4px;
+            transition: all 0.2s;
         }
-        /* 签名小标志 */
         .edit-icon { 
             font-size: 8px; opacity: 0; transition: 0.3s; font-style: normal;
             border: 0.8px solid var(--accent-color); border-radius: 3px; padding: 0 3px;
+            flex-shrink: 0;
         }
 
         /* --- 编辑模式全局样式 --- */
@@ -82,7 +83,7 @@
         }
         body.edit-mode .edit-icon { opacity: 0.3; }
 
-        /* --- 中间组件与底部 --- */
+        /* --- 中间组件与底部 (保持原封不动) --- */
         .middle-container { display: flex; width: 100%; gap: 15px; margin-top: 25px; height: 160px; }
         .editable-input {
             width: 100%; height: 100%; border: none; background: transparent;
@@ -134,7 +135,7 @@
         <div style="font-size: 19px; font-weight: 800;">瑞希</div>
         
         <div class="signature-box">
-            <input type="text" class="sig-input" id="in-sig" value="保持真实 · 2025" onblur="saveData()" oninput="this.size=this.value.length||1">
+            <input type="text" class="sig-input" id="in-sig" value="保持真实 · 2025" onblur="saveData()">
             <i class="edit-icon">EDIT</i>
         </div>
     </div>
