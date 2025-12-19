@@ -7,97 +7,73 @@
     <style>
         :root {
             --main-color: #ff99aa;
-            --input-lift: 45px; /* 默认避让高度 */
+            --input-lift: 45px;
         }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: -apple-system, sans-serif; background: #000; }
 
-        /* 主屏幕 */
+        /* 主屏幕层级调低，确保它不会挡住弹窗，但自己能被点到 */
         #phone-screen {
             width: 100%; height: 100%;
             background: linear-gradient(180deg, #f0f0f0 0%, #e0e0e0 100%);
             display: flex; flex-direction: column; align-items: center; position: relative;
+            z-index: 1; 
         }
 
         .status-bar { width: 100%; padding: 5px 20px; display: flex; justify-content: space-between; font-size: 12px; color: #333; margin-top: env(safe-area-inset-top); }
         .time-large { font-size: 70px; font-weight: 200; color: var(--main-color); margin-top: 50px; }
 
-        /* 图标矩阵 */
         .icon-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 40px 25px; width: 100%; }
-        .app-icon { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-        .icon-box { width: 60px; height: 60px; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 2px solid transparent; }
-        .app-icon:active .icon-box { transform: scale(0.9); border-color: var(--main-color); }
+        .app-icon { display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative; z-index: 2; }
+        .icon-box { width: 60px; height: 60px; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.1s; }
+        .app-icon:active .icon-box { transform: scale(0.9); }
         .app-icon span { font-size: 12px; color: #666; margin-top: 8px; }
 
-        /* 底部Dock */
-        .dock { position: absolute; bottom: 30px; width: 90%; background: rgba(255,255,255,0.5); backdrop-filter: blur(10px); border-radius: 25px; display: flex; justify-content: space-around; padding: 15px; }
-        .dock-icon { width: 50px; height: 50px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        /* 弹窗层级调到最高，且 display:none 时不占空间 */
+        .full-page { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: #f7f7f7; 
+            z-index: 999; 
+            flex-direction: column; 
+        }
 
-        /* 弹窗框架 */
-        .full-page { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #f7f7f7; z-index: 100; flex-direction: column; }
-        .header { background: #ededed; padding: 45px 15px 15px; display: flex; align-items: center; border-bottom: 1px solid #ddd; }
-        .header-title { flex: 1; text-align: center; font-weight: bold; }
-
-        /* 聊天区 */
-        #chat-content { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; }
-        .bubble { padding: 10px 14px; border-radius: 10px; margin-bottom: 15px; max-width: 80%; font-size: 16px; word-wrap: break-word; }
-        .me { align-self: flex-end; background: #95ec69; }
-        .target { align-self: flex-start; background: white; border: 1px solid #eee; }
-
-        /* 输入框 - 适配美化 */
+        /* 聊天输入区优化 */
         .input-area { 
             background: #ffffff; display: flex; align-items: center; padding: 10px 15px; 
             border-top: 1px solid #eee;
             padding-bottom: calc(var(--input-lift) + env(safe-area-inset-bottom));
         }
-        #chat-input { flex: 1; background: #f2f2f2; border: none; border-radius: 8px; padding: 10px; outline: none; }
-        #send-btn { margin-left: 10px; background: var(--main-color); color: white; border: none; border-radius: 6px; padding: 8px 15px; }
+        #chat-input { flex: 1; background: #f2f2f2; border: none; border-radius: 8px; padding: 10px; font-size: 16px; }
+        #send-btn { margin-left: 10px; background: var(--main-color); color: white; border: none; border-radius: 6px; padding: 8px 15px; font-weight: bold; }
 
         /* 设置列表 */
         .settings-list { padding: 15px; }
         .setting-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .setting-card label { font-weight: 500; color: #333; }
-        input[type="range"] { width: 120px; }
-        .clear-btn { width: 100%; padding: 15px; background: #ff4d4f; color: white; border: none; border-radius: 12px; margin-top: 20px; font-weight: bold; }
+        input[type="range"] { width: 100px; }
     </style>
 </head>
 <body>
 
 <div id="phone-screen">
-    <div class="status-bar">
-        <span id="mini-time">00:00</span>
-        <span>📶🔋100%</span>
-    </div>
+    <div class="status-bar"><span>00:00</span><span>📶🔋100%</span></div>
     <div class="time-large" id="clock">12:00</div>
-    
     <div class="icon-grid">
-        <div class="app-icon" onclick="openPage('chat')">
-            <div class="icon-box">💬</div><span>微信</span>
-        </div>
-        <div class="app-icon" onclick="openPage('settings')">
-            <div class="icon-box">⚙️</div><span>设置</span>
-        </div>
-        <div class="app-icon">
-            <div class="icon-box">🖼️</div><span>相册</span>
-        </div>
-        <div class="app-icon">
-            <div class="icon-box">🛍️</div><span>小店</span>
-        </div>
-    </div>
-
-    <div class="dock">
-        <div class="dock-icon">📞</div>
-        <div class="dock-icon">📸</div>
-        <div class="dock-icon">🔄</div>
+        <div class="app-icon" onclick="openPage('chat')"><div class="icon-box">💬</div><span>微信</span></div>
+        <div class="app-icon" onclick="openPage('settings')"><div class="icon-box">⚙️</div><span>设置</span></div>
+        <div class="app-icon"><div class="icon-box">🖼️</div><span>相册</span></div>
+        <div class="app-icon"><div class="icon-box">🛍️</div><span>小店</span></div>
     </div>
 </div>
 
 <div id="chat-page" class="full-page">
-    <div class="header">
-        <span onclick="closePage('chat')" style="cursor:pointer">◀</span>
-        <div class="header-title">新朋友</div>
+    <div style="padding:45px 15px 15px; background:#ededed; display:flex; align-items:center;">
+        <span onclick="closePage('chat')" style="font-size:20px; padding:0 10px;">◀</span>
+        <div style="flex:1; text-align:center; font-weight:bold;">新朋友</div>
     </div>
-    <div id="chat-content"></div>
+    <div id="chat-content" style="flex:1; overflow-y:auto; padding:15px;"></div>
     <div class="input-area">
         <input type="text" id="chat-input" placeholder="发个消息...">
         <button id="send-btn" onclick="sendMessage()">发送</button>
@@ -105,9 +81,9 @@
 </div>
 
 <div id="settings-page" class="full-page">
-    <div class="header">
-        <span onclick="closePage('settings')" style="cursor:pointer">◀</span>
-        <div class="header-title">系统美化</div>
+    <div style="padding:45px 15px 15px; background:#ededed; display:flex; align-items:center;">
+        <span onclick="closePage('settings')" style="font-size:20px; padding:0 10px;">◀</span>
+        <div style="flex:1; text-align:center; font-weight:bold;">系统美化</div>
     </div>
     <div class="settings-list">
         <div class="setting-card">
@@ -116,60 +92,47 @@
         </div>
         <div class="setting-card">
             <label>躲避黑条高度</label>
-            <input type="range" min="20" max="100" id="lift-range" oninput="updateLift(this.value)">
+            <input type="range" min="10" max="100" id="lift-range" oninput="updateLift(this.value)">
         </div>
-        <button class="clear-btn" onclick="localStorage.clear();location.reload();">清除所有记忆</button>
     </div>
 </div>
 
 <script>
-    // 基础时钟
     function updateClock() {
         const now = new Date();
-        const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-        document.getElementById('clock').innerText = timeStr;
-        document.getElementById('mini-time').innerText = timeStr;
+        document.getElementById('clock').innerText = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
     }
-    setInterval(updateClock, 1000);
-    updateClock();
+    setInterval(updateClock, 1000); updateClock();
 
-    // 页面切换
     function openPage(id) { document.getElementById(id + '-page').style.display = 'flex'; }
     function closePage(id) { document.getElementById(id + '-page').style.display = 'none'; }
 
-    // 聊天逻辑
     function sendMessage() {
         const input = document.getElementById('chat-input');
         if(!input.value) return;
-        addBubble(input.value, 'me');
-        setTimeout(() => addBubble('瑞希收到啦！你刚才真棒！', 'target'), 1000);
+        const div = document.createElement('div');
+        div.style = "align-self:flex-end; background:#95ec69; padding:10px; border-radius:10px; margin-bottom:10px; max-width:80%;";
+        div.innerText = input.value;
+        document.getElementById('chat-content').appendChild(div);
         input.value = '';
     }
 
-    function addBubble(text, type) {
-        const div = document.createElement('div');
-        div.className = `bubble ${type}`;
-        div.innerText = text;
-        document.getElementById('chat-content').appendChild(div);
-        document.getElementById('chat-content').scrollTop = document.getElementById('chat-content').scrollHeight;
-    }
-
-    // --- 美化控制逻辑 ---
     function updateColor(val) {
         document.documentElement.style.setProperty('--main-color', val);
-        localStorage.setItem('mizuki-color', val);
+        localStorage.setItem('m-color', val);
     }
-
     function updateLift(val) {
         document.documentElement.style.setProperty('--input-lift', val + 'px');
-        localStorage.setItem('mizuki-lift', val);
+        localStorage.setItem('m-lift', val);
     }
 
-    // 读取记忆
     window.onload = () => {
-        const savedColor = localStorage.getItem('mizuki-color') || '#ff99aa';
-        const savedLift = localStorage.getItem('mizuki-lift') || '45';
-        updateColor(savedColor);
-        updateLift(savedLift);
-        document.getElementById('color-picker').value = savedColor;
-        document.getElementById('lift-range').value = savedLift;
+        const c = localStorage.getItem('m-color') || '#ff99aa';
+        const l = localStorage.getItem('m-lift') || '45';
+        updateColor(c); updateLift(l);
+        document.getElementById('color-picker').value = c;
+        document.getElementById('lift-range').value = l;
+    };
+</script>
+</body>
+</html>
