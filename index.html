@@ -3,58 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mizuki Phone Pro v5.6</title>
+    <title>Mizuki Phone Pro v6.0</title>
     <style>
         :root { --main-color: #ff99aa; --input-lift: 45px; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; margin: 0; padding: 0; }
-        body, html { height: 100%; overflow: hidden; font-family: -apple-system, sans-serif; background: #000; }
+        body, html { height: 100%; overflow: hidden; font-family: -apple-system, sans-serif; background: #e8f0e8; } /* 背景换成淡淡的青草绿 */
 
-        /* 主屏幕层级 */
-        #phone-screen {
-            width: 100%; height: 100%; position: relative; z-index: 1;
-            background: linear-gradient(180deg, #f0f0f0 0%, #e0e0e0 100%);
-            display: flex; flex-direction: column; align-items: center;
-        }
-
+        /* 主屏幕 */
+        #phone-screen { width: 100%; height: 100%; position: relative; z-index: 1; background: linear-gradient(180deg, #f0f5f0 0%, #d8e5d8 100%); display: flex; flex-direction: column; align-items: center; }
         .status-bar { width: 100%; padding: 5px 20px; display: flex; justify-content: space-between; font-size: 12px; color: #333; margin-top: env(safe-area-inset-top); }
         .time-large { font-size: 70px; font-weight: 200; color: var(--main-color); margin-top: 50px; }
 
+        /* 图标与底座 */
         .icon-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 40px 25px; width: 100%; }
         .app-icon { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-        .icon-box { width: 60px; height: 60px; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1.5px solid transparent; transition: 0.2s; }
-        .app-icon:active .icon-box { border-color: var(--main-color); transform: scale(0.9); }
+        .icon-box { width: 60px; height: 60px; background: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .app-icon span { font-size: 12px; color: #666; margin-top: 8px; }
-
-        .dock { 
-            position: absolute; bottom: 30px; width: 90%; 
-            background: rgba(255,255,255,0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border-radius: 25px; display: flex; justify-content: space-around; padding: 15px;
-        }
+        .dock { position: absolute; bottom: 30px; width: 90%; background: rgba(255,255,255,0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 25px; display: flex; justify-content: space-around; padding: 15px; }
         .dock-icon { width: 50px; height: 50px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
-        /* 弹窗核心逻辑 */
-        .full-page { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #f7f7f7; z-index: 9999; flex-direction: column;
-        }
+        /* --- 弹窗与设置页美化 (仿照你给的图) --- */
+        .full-page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #eef3ee; z-index: 9999; flex-direction: column; }
+        .header { padding: 50px 15px 15px; background: rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: space-between; font-weight: bold; border-bottom: 1px solid rgba(0,0,0,0.05); }
         
-        .header { padding: 50px 15px 15px; background: #ededed; display: flex; align-items: center; border-bottom: 1px solid #ddd; }
-        .header-title { flex: 1; text-align: center; font-weight: bold; }
+        /* 核心：卡片式模块 */
+        .config-card { background: white; margin: 15px; padding: 25px 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.03); display: flex; flex-direction: column; gap: 20px; }
+        .config-item { display: flex; flex-direction: column; gap: 8px; }
+        .config-item label { font-size: 13px; color: #99a; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .config-item input { width: 100%; padding: 12px; background: #f8faf8; border: 1px solid #eef1ee; border-radius: 10px; font-size: 15px; }
 
-        /* 聊天区域 */
-        #chat-content { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; }
-        .input-area { 
-            background: #ffffff; display: flex; align-items: center; padding: 12px 15px; 
-            border-top: 1px solid #eee;
-            /* 这里是徒儿最关心的躲避黑条逻辑 */
-            padding-bottom: calc(var(--input-lift) + env(safe-area-inset-bottom)); 
-        }
-        #chat-input { flex: 1; background: #f2f2f2; border: none; border-radius: 8px; padding: 10px 15px; font-size: 16px; }
-        #send-btn { margin-left: 10px; background: var(--main-color); color: white; border: none; border-radius: 8px; padding: 8px 18px; font-weight: bold; }
+        /* 按钮美化 */
+        .save-btn { background: #8e9e8e; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; margin: 0 15px; box-shadow: 0 4px 10px rgba(142,158,142,0.3); }
+        .reset-btn { background: white; color: #8e9e8e; border: 1px solid #d8e0d8; padding: 12px; border-radius: 12px; font-weight: bold; margin: 10px 15px; }
 
-        /* 设置卡片 */
-        .setting-item { background: white; margin: 15px; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        input[type="range"] { accent-color: var(--main-color); }
+        /* 底部切换栏 */
+        .footer-tabs { position: absolute; bottom: 0; width: 100%; height: 60px; background: white; display: flex; border-top: 1px solid #eee; padding-bottom: env(safe-area-inset-bottom); }
+        .tab-item { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: #ccc; }
+        .tab-item.active { color: #8e9e8e; border-top: 2px solid #8e9e8e; }
+
+        /* 聊天输入适配 */
+        .input-area { background: #ffffff; display: flex; align-items: center; padding: 12px 15px; border-top: 1px solid #eee; padding-bottom: calc(var(--input-lift) + env(safe-area-inset-bottom)); }
+        #chat-input { flex: 1; background: #f2f2f2; border: none; border-radius: 20px; padding: 10px 18px; font-size: 16px; }
+        #send-btn { margin-left: 10px; background: var(--main-color); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -69,18 +59,17 @@
         <div class="app-icon"><div class="icon-box">🛍️</div><span>小店</span></div>
     </div>
     <div class="dock">
-        <div class="dock-icon" style="border: 1px solid var(--main-color)">📞</div>
-        <div class="dock-icon">📸</div>
-        <div class="dock-icon">🔄</div>
+        <div class="dock-icon">📞</div><div class="dock-icon">📸</div><div class="dock-icon">🔄</div>
     </div>
 </div>
 
 <div id="chat-page" class="full-page">
     <div class="header">
-        <span onclick="closePage('chat')" style="font-size:24px; cursor:pointer;">🏠</span>
-        <div class="header-title">新朋友</div>
+        <span onclick="closePage('chat')" style="cursor:pointer">✕</span>
+        <span>新朋友</span>
+        <span style="opacity:0">✕</span>
     </div>
-    <div id="chat-content"></div>
+    <div id="chat-content" style="flex:1; overflow-y:auto; padding:15px; display:flex; flex-direction:column;"></div>
     <div class="input-area">
         <input type="text" id="chat-input" placeholder="发个消息...">
         <button id="send-btn" onclick="sendMessage()">发送</button>
@@ -89,18 +78,30 @@
 
 <div id="settings-page" class="full-page">
     <div class="header">
-        <span onclick="closePage('settings')" style="font-size:24px; cursor:pointer;">🏠</span>
-        <div class="header-title">系统美化</div>
+        <span onclick="closePage('settings')" style="cursor:pointer">✕</span>
+        <span>美化配置</span>
+        <span style="opacity:0">✕</span>
     </div>
-    <div class="setting-item">
-        <label>主题色</label>
-        <input type="color" id="c-picker" onchange="upColor(this.value)">
+    
+    <div class="config-card">
+        <div class="config-item">
+            <label>主题肤色 (HEX)</label>
+            <input type="color" id="c-picker" style="height:40px; padding:2px;" onchange="upColor(this.value)">
+        </div>
+        <div class="config-item">
+            <label>躲避黑条高度 (PIXELS)</label>
+            <input type="range" min="10" max="120" id="l-range" oninput="upLift(this.value)">
+            <p id="lift-show" style="text-align:right; font-size:12px; color:#8e9e8e;"></p>
+        </div>
     </div>
-    <div class="setting-item">
-        <label>躲避黑条 (高度)</label>
-        <input type="range" min="10" max="120" id="l-range" oninput="upLift(this.value)">
+
+    <button class="save-btn" onclick="closePage('settings')">保存并应用设置</button>
+    <button class="reset-btn" onclick="localStorage.clear();location.reload();">恢复默认外观</button>
+
+    <div class="footer-tabs">
+        <div class="tab-item active">配置</div>
+        <div class="tab-item">预设</div>
     </div>
-    <p style="padding: 20px; color: #999; font-size: 12px; text-align: center;">拖动滑块，输入框高度实时变化</p>
 </div>
 
 <script>
@@ -118,17 +119,20 @@
     function sendMessage() {
         const i = document.getElementById('chat-input');
         if(!i.value) return;
-        const box = document.getElementById('chat-content');
         const d = document.createElement('div');
-        d.style = "align-self:flex-end; background:#95ec69; padding:10px 14px; border-radius:10px; margin-bottom:12px; max-width:80%; box-shadow: 0 2px 5px rgba(0,0,0,0.05);";
+        d.style = "align-self:flex-end; background:#95ec69; padding:10px 14px; border-radius:15px 15px 2px 15px; margin-bottom:12px; max-width:80%; font-size:15px; box-shadow:0 2px 5px rgba(0,0,0,0.05);";
         d.innerText = i.value;
-        box.appendChild(d);
+        document.getElementById('chat-content').appendChild(d);
         i.value = '';
-        box.scrollTop = box.scrollHeight;
+        document.getElementById('chat-content').scrollTop = document.getElementById('chat-content').scrollHeight;
     }
 
     function upColor(v) { document.documentElement.style.setProperty('--main-color', v); localStorage.setItem('mc', v); }
-    function upLift(v) { document.documentElement.style.setProperty('--input-lift', v + 'px'); localStorage.setItem('ml', v); }
+    function upLift(v) { 
+        document.documentElement.style.setProperty('--input-lift', v + 'px'); 
+        document.getElementById('lift-show').innerText = v + 'px';
+        localStorage.setItem('ml', v); 
+    }
 
     window.onload = () => {
         const mc = localStorage.getItem('mc') || '#ff99aa';
