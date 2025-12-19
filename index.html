@@ -32,23 +32,57 @@
             color: var(--accent-color);
         }
 
-        /* 状态栏：新版电池设计 */
+        /* --- 仿 iPhone 顶栏格式 --- */
         .status-bar {
-            width: 100%; display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 5px; font-size: 11px; font-weight: 700; font-family: monospace;
+            width: 100%;
+            height: 44px; /* 标准 iOS 状态栏高度 */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4px;
+            font-size: 12px;
+            font-weight: 600;
         }
 
-        .battery-container { display: flex; align-items: center; gap: 4px; }
+        /* 左侧时间 */
+        .status-left { flex: 1; display: flex; justify-content: flex-start; padding-left: 12px; }
+
+        /* 中间空白 (模拟灵动岛区域) */
+        .status-center { flex: 1; display: flex; justify-content: center; }
+
+        /* 右侧图标组 */
+        .status-right { 
+            flex: 1; 
+            display: flex; 
+            justify-content: flex-end; 
+            align-items: center; 
+            gap: 5px; 
+            padding-right: 12px;
+        }
+
+        /* 信号图标 */
+        .signal-bars { display: flex; gap: 1.5px; align-items: flex-end; height: 10px; }
+        .bar { width: 3px; background: var(--accent-color); border-radius: 0.5px; }
+        .bar:nth-child(1) { height: 3px; }
+        .bar:nth-child(2) { height: 5px; }
+        .bar:nth-child(3) { height: 7px; }
+        .bar:nth-child(4) { height: 10px; opacity: 0.3; }
+
+        /* Wi-Fi 图标 (简易版) */
+        .wifi-icon { font-size: 12px; margin-right: 2px; }
+
+        /* 电池图标 */
         .battery-shell {
-            width: 22px; height: 11px; border: 1.5px solid var(--accent-color);
-            border-radius: 3px; position: relative; padding: 1px; opacity: 0.8;
+            width: 22px; height: 11px; border: 1.2px solid var(--accent-color);
+            border-radius: 3px; position: relative; padding: 1px;
         }
         .battery-shell::after {
-            content: ''; position: absolute; right: -3.5px; top: 2.5px;
-            width: 2px; height: 4px; background: var(--accent-color); border-radius: 0 1px 1px 0;
+            content: ''; position: absolute; right: -3px; top: 2.5px;
+            width: 1.5px; height: 4px; background: var(--accent-color); border-radius: 0 1px 1px 0;
         }
-        .battery-level { width: 80%; height: 100%; background: var(--accent-color); border-radius: 1px; }
+        .battery-level { width: 85%; height: 100%; background: var(--accent-color); border-radius: 1px; }
 
+        /* --- 以下为原封不动的部分 --- */
         .mizuki-card {
             margin-top: 20px; width: 100%; background: var(--card-bg);
             backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%);
@@ -62,19 +96,15 @@
 
         .middle-container { display: flex; width: 100%; gap: 15px; margin-top: 25px; height: 160px; }
         
-        /* 核心修复：输入框继承圆角，消除尖角 */
         .editable-input {
             width: 100%; height: 100%; border: none; background: transparent;
             text-align: center; color: var(--accent-color); font-family: inherit;
-            outline: none; font-weight: 700; pointer-events: none;
-            border-radius: inherit; /* 完美贴合外层容器圆角 */
+            outline: none; font-weight: 700; pointer-events: none; border-radius: inherit;
         }
 
         body.edit-mode .editable-input {
-            pointer-events: auto;
-            user-select: text;
-            background: rgba(0,0,0,0.02);
-            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05); /* 代替虚线，更沉稳 */
+            pointer-events: auto; user-select: text; background: rgba(0,0,0,0.02);
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
         }
 
         .main-widget { flex: 1.8; background: rgba(255, 255, 255, 0.85); border-radius: 28px; border: var(--soft-border); display: flex; align-items: center; overflow: hidden; }
@@ -108,13 +138,12 @@
 <body onclick="triggerHaptic()">
 
     <div class="status-bar">
-        <span>瑞希系统</span>
-        <span id="live-time">00:00</span>
-        <div class="battery-container">
-            <span style="font-size: 9px; opacity: 0.8;">82%</span>
-            <div class="battery-shell">
-                <div class="battery-level"></div>
-            </div>
+        <div class="status-left"><span id="live-time">09:41</span></div>
+        <div class="status-center"></div>
+        <div class="status-right">
+            <div class="signal-bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+            <div class="wifi-icon">Wi-Fi</div>
+            <div class="battery-shell"><div class="battery-level"></div></div>
         </div>
     </div>
 
@@ -191,8 +220,7 @@
         function toggleEditMode() {
             triggerHaptic();
             isEditMode = !isEditMode;
-            const btn = document.getElementById('edit-toggle');
-            btn.classList.toggle('active');
+            document.getElementById('edit-toggle').classList.toggle('active');
             document.body.classList.toggle('edit-mode');
         }
 
