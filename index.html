@@ -32,85 +32,66 @@
             color: var(--accent-color);
         }
 
-        /* --- 仿 iPhone 顶栏格式 --- */
+        /* --- iPhone 顶栏 --- */
         .status-bar {
-            width: 100%;
-            height: 44px; /* 标准 iOS 状态栏高度 */
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 4px;
-            font-size: 12px;
-            font-weight: 600;
+            width: 100%; height: 44px; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 4px; font-size: 12px; font-weight: 600;
         }
-
-        /* 左侧时间 */
-        .status-left { flex: 1; display: flex; justify-content: flex-start; padding-left: 12px; }
-
-        /* 中间空白 (模拟灵动岛区域) */
-        .status-center { flex: 1; display: flex; justify-content: center; }
-
-        /* 右侧图标组 */
-        .status-right { 
-            flex: 1; 
-            display: flex; 
-            justify-content: flex-end; 
-            align-items: center; 
-            gap: 5px; 
-            padding-right: 12px;
-        }
-
-        /* 信号图标 */
+        .status-left { flex: 1; padding-left: 12px; }
+        .status-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 5px; padding-right: 12px; }
         .signal-bars { display: flex; gap: 1.5px; align-items: flex-end; height: 10px; }
         .bar { width: 3px; background: var(--accent-color); border-radius: 0.5px; }
-        .bar:nth-child(1) { height: 3px; }
-        .bar:nth-child(2) { height: 5px; }
-        .bar:nth-child(3) { height: 7px; }
-        .bar:nth-child(4) { height: 10px; opacity: 0.3; }
-
-        /* Wi-Fi 图标 (简易版) */
-        .wifi-icon { font-size: 12px; margin-right: 2px; }
-
-        /* 电池图标 */
-        .battery-shell {
-            width: 22px; height: 11px; border: 1.2px solid var(--accent-color);
-            border-radius: 3px; position: relative; padding: 1px;
-        }
-        .battery-shell::after {
-            content: ''; position: absolute; right: -3px; top: 2.5px;
-            width: 1.5px; height: 4px; background: var(--accent-color); border-radius: 0 1px 1px 0;
-        }
+        .bar:nth-child(1) { height: 3px; } .bar:nth-child(2) { height: 5px; } .bar:nth-child(3) { height: 7px; } .bar:nth-child(4) { height: 10px; opacity: 0.3; }
+        .battery-shell { width: 22px; height: 11px; border: 1.2px solid var(--accent-color); border-radius: 3px; position: relative; padding: 1px; }
+        .battery-shell::after { content: ''; position: absolute; right: -3px; top: 2.5px; width: 1.5px; height: 4px; background: var(--accent-color); border-radius: 0 1px 1px 0; }
         .battery-level { width: 85%; height: 100%; background: var(--accent-color); border-radius: 1px; }
 
-        /* --- 以下为原封不动的部分 --- */
+        /* --- 个人卡片与签名 --- */
         .mizuki-card {
             margin-top: 20px; width: 100%; background: var(--card-bg);
             backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%);
             border-radius: 38px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.8);
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04); text-align: center;
         }
-
-        .avatar-box { width: 90px; height: 90px; margin: 0 auto 12px; cursor: pointer; transition: transform 0.2s; }
+        .avatar-box { width: 90px; height: 90px; margin: 0 auto 12px; cursor: pointer; }
         #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #fff; object-fit: cover; }
         #file-input { display: none; }
 
+        /* 签名区域布局 */
+        .signature-box {
+            display: flex; align-items: center; justify-content: center;
+            margin-top: 8px; gap: 4px;
+        }
+        .sig-input {
+            background: transparent; border: none; outline: none;
+            color: var(--accent-color); font-size: 10px; opacity: 0.4;
+            font-family: monospace; text-align: center; width: auto;
+            min-width: 20px; pointer-events: none; border-radius: 4px;
+        }
+        /* 签名小标志 */
+        .edit-icon { 
+            font-size: 8px; opacity: 0; transition: 0.3s; font-style: normal;
+            border: 0.8px solid var(--accent-color); border-radius: 3px; padding: 0 3px;
+        }
+
+        /* --- 编辑模式全局样式 --- */
+        body.edit-mode .editable-input, 
+        body.edit-mode .sig-input {
+            pointer-events: auto; user-select: text; background: rgba(0,0,0,0.02);
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+        }
+        body.edit-mode .edit-icon { opacity: 0.3; }
+
+        /* --- 中间组件与底部 --- */
         .middle-container { display: flex; width: 100%; gap: 15px; margin-top: 25px; height: 160px; }
-        
         .editable-input {
             width: 100%; height: 100%; border: none; background: transparent;
             text-align: center; color: var(--accent-color); font-family: inherit;
             outline: none; font-weight: 700; pointer-events: none; border-radius: inherit;
         }
-
-        body.edit-mode .editable-input {
-            pointer-events: auto; user-select: text; background: rgba(0,0,0,0.02);
-            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
-        }
-
         .main-widget { flex: 1.8; background: rgba(255, 255, 255, 0.85); border-radius: 28px; border: var(--soft-border); display: flex; align-items: center; overflow: hidden; }
         .side-apps { flex: 1; display: flex; flex-direction: column; gap: 15px; }
         .small-app-box { flex: 1; background: rgba(255, 255, 255, 0.85); border-radius: 18px; border: var(--soft-border); display: flex; align-items: center; overflow: hidden; }
-
         .dock-bar {
             margin-top: auto; margin-bottom: 40px; width: 85%;
             background: rgba(255, 255, 255, 0.35); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -118,19 +99,18 @@
         }
         .dock-icon { aspect-ratio: 2.2/1; background: #fff; border-radius: 20px; display: flex; align-items: center; border: var(--soft-border); overflow: hidden; }
 
+        /* 设置面板 */
         #settings-panel {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(249, 244, 245, 0.8); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
-            z-index: 9999; padding: 60px 30px; flex-direction: column; align-items: center;
+            background: rgba(249, 244, 245, 0.8); backdrop-filter: blur(40px); z-index: 9999;
+            padding: 60px 30px; flex-direction: column; align-items: center;
         }
-
         .settings-card { width: 100%; background: rgba(255, 255, 255, 0.7); border-radius: 30px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.8); }
         .switch-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .toggle-btn { width: 50px; height: 26px; background: #ddd; border-radius: 13px; position: relative; transition: 0.3s; }
         .toggle-btn::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: 0.3s; }
         .toggle-btn.active { background: #8b7d7d; }
         .toggle-btn.active::after { left: 27px; }
-
         .color-dot { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; cursor: pointer; }
         .btn-done { width: 100%; padding: 18px; background: var(--accent-color); color: #fff; border: none; border-radius: 22px; font-weight: 800; margin-top: 25px; }
     </style>
@@ -139,10 +119,9 @@
 
     <div class="status-bar">
         <div class="status-left"><span id="live-time">09:41</span></div>
-        <div class="status-center"></div>
         <div class="status-right">
             <div class="signal-bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-            <div class="wifi-icon">Wi-Fi</div>
+            <span style="font-size:10px;margin-right:2px">Wi-Fi</span>
             <div class="battery-shell"><div class="battery-level"></div></div>
         </div>
     </div>
@@ -153,21 +132,23 @@
         </div>
         <input type="file" id="file-input" accept="image/*" onchange="handleFile(this)">
         <div style="font-size: 19px; font-weight: 800;">瑞希</div>
-        <div style="font-size: 10px; opacity: 0.4; margin-top: 5px;">保持真实 · 2025</div>
+        
+        <div class="signature-box">
+            <input type="text" class="sig-input" id="in-sig" value="保持真实 · 2025" onblur="saveData()" oninput="this.size=this.value.length||1">
+            <i class="edit-icon">EDIT</i>
+        </div>
     </div>
 
     <div class="middle-container">
-        <div class="main-widget">
-            <input type="text" class="editable-input" id="in-main" value="(*^.^*)" onblur="saveData()" style="font-size:16px;">
-        </div>
+        <div class="main-widget"><input type="text" class="editable-input" id="in-main" value="(*^.^*)" onblur="saveData()"></div>
         <div class="side-apps">
-            <div class="small-app-box"><input type="text" class="editable-input" id="in-sub1" value="像素" onblur="saveData()" style="font-size:11px;"></div>
-            <div class="small-app-box"><input type="text" class="editable-input" id="in-sub2" value="相册" onblur="saveData()" style="font-size:11px;"></div>
+            <div class="small-app-box"><input type="text" class="editable-input" id="in-sub1" value="像素" onblur="saveData()"></div>
+            <div class="small-app-box"><input type="text" class="editable-input" id="in-sub2" value="相册" onblur="saveData()"></div>
         </div>
     </div>
 
     <nav class="dock-bar">
-        <div class="dock-icon"><input type="text" class="editable-input" id="in-dock" value="应用" onblur="saveData()" style="font-size:12px;"></div>
+        <div class="dock-icon"><input type="text" class="editable-input" id="in-dock" value="应用" onblur="saveData()"></div>
         <div class="dock-icon" onclick="event.stopPropagation(); toggleSettings()">
             <div style="width:100%; text-align:center; font-size:12px; font-weight:600;">设置</div>
         </div>
@@ -181,7 +162,6 @@
                 <div id="edit-toggle" class="toggle-btn" onclick="toggleEditMode()"></div>
             </div>
             <hr style="border: none; border-top: 1px solid rgba(0,0,0,0.05); margin: 20px 0;">
-            <label style="font-size: 11px; font-weight: 800; opacity: 0.5; display: block; margin-bottom: 10px; text-align: center;">背景颜色</label>
             <div style="display: flex; gap: 12px; justify-content: center;">
                 <div class="color-dot" style="background: #f9f4f5;" onclick="changeBg(0)"></div>
                 <div class="color-dot" style="background: #e5e0e1;" onclick="changeBg(1)"></div>
@@ -192,7 +172,7 @@
     </div>
 
     <script>
-        const ids = ['in-main', 'in-sub1', 'in-sub2', 'in-dock'];
+        const ids = ['in-main', 'in-sub1', 'in-sub2', 'in-dock', 'in-sig'];
         let isEditMode = false;
 
         window.onload = function() {
