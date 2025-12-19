@@ -23,16 +23,12 @@
             background-image: radial-gradient(#e2d5d5 0.8px, transparent 0);
             background-size: 24px 24px;
             height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: flex; flex-direction: column; align-items: center;
             font-family: -apple-system, "PingFang SC", sans-serif;
-            overflow: hidden;
-            transition: background 0.5s ease;
-            color: var(--accent-color);
+            overflow: hidden; transition: background 0.5s ease; color: var(--accent-color);
         }
 
-        /* --- iOS 风格顶栏 --- */
+        /* --- iOS 顶栏 --- */
         .status-bar {
             width: 100%; height: 44px; display: flex; justify-content: space-between; align-items: center;
             padding: 0 4px; font-size: 12px; font-weight: 600;
@@ -46,65 +42,59 @@
         .battery-shell::after { content: ''; position: absolute; right: -3px; top: 2.5px; width: 1.5px; height: 4px; background: var(--accent-color); border-radius: 0 1px 1px 0; }
         .battery-level { width: 85%; height: 100%; background: var(--accent-color); border-radius: 1px; }
 
-        /* --- 个人卡片与多行签名 --- */
+        /* --- 个人卡片 --- */
         .mizuki-card {
             margin-top: 20px; width: 100%; background: var(--card-bg);
             backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%);
             border-radius: 38px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.8);
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04); text-align: center;
-            display: flex; flex-direction: column; align-items: center;
         }
-        
-        .avatar-box { width: 90px; height: 90px; margin-bottom: 12px; cursor: pointer; }
+        .avatar-box { width: 90px; height: 90px; margin: 0 auto 12px; cursor: pointer; }
         #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #fff; object-fit: cover; }
         #file-input { display: none; }
-
-        .signature-box { 
-            display: flex; justify-content: center; margin-top: 6px; width: 100%; 
-            min-height: 24px; /* 保证至少有一行的高度 */
-        }
-        
-        /* 核心改动：支持换行的文本域 */
+        .signature-box { display: flex; justify-content: center; margin-top: 6px; width: 100%; }
         .sig-input {
-            background: transparent; border: none; outline: none;
-            color: var(--accent-color); font-size: 10px; opacity: 0.4;
-            font-family: inherit; text-align: center; 
-            width: 220px; /* 稍宽一点方便换行 */
-            pointer-events: none; border-radius: 8px;
-            transition: all 0.2s;
-            resize: none; /* 禁止手动调整大小 */
-            overflow: hidden; /* 隐藏滚动条 */
-            line-height: 1.4;
-            display: block;
-            padding: 4px;
+            background: transparent; border: none; outline: none; color: var(--accent-color); font-size: 10px; opacity: 0.4;
+            text-align: center; width: 220px; pointer-events: none; resize: none; overflow: hidden; line-height: 1.4; padding: 4px;
         }
 
-        /* --- 编辑模式通用样式 --- */
-        .editable-input {
-            width: 100%; height: 100%; border: none; background: transparent;
-            text-align: center; color: var(--accent-color); font-family: inherit;
-            outline: none; font-weight: 700; pointer-events: none; border-radius: inherit;
-        }
-
-        body.edit-mode .editable-input, 
-        body.edit-mode .sig-input {
-            pointer-events: auto; user-select: text; 
-            background: rgba(0,0,0,0.025);
-            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
-        }
-
-        /* --- 桌面组件 --- */
+        /* --- 桌面组件 (左侧大组件支持换行) --- */
         .middle-container { display: flex; width: 100%; gap: 15px; margin-top: 25px; height: 160px; }
-        .main-widget { flex: 1.8; background: rgba(255, 255, 255, 0.85); border-radius: 28px; border: var(--soft-border); display: flex; align-items: center; overflow: hidden; }
-        .side-apps { flex: 1; display: flex; flex-direction: column; gap: 15px; }
-        .small-app-box { flex: 1; background: rgba(255, 255, 255, 0.85); border-radius: 18px; border: var(--soft-border); display: flex; align-items: center; overflow: hidden; }
         
+        .main-widget { 
+            flex: 1.8; background: rgba(255, 255, 255, 0.85); border-radius: 28px; 
+            border: var(--soft-border); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 10px;
+        }
+        /* 主组件文本域 */
+        .main-textarea {
+            width: 100%; background: transparent; border: none; outline: none;
+            text-align: center; color: var(--accent-color); font-weight: 700; font-size: 16px;
+            resize: none; overflow: hidden; pointer-events: none; line-height: 1.3;
+        }
+
+        .side-apps { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+        .small-app-box { 
+            flex: 1; background: rgba(255, 255, 255, 0.85); border-radius: 18px; 
+            border: var(--soft-border); display: flex; align-items: center; overflow: hidden; 
+        }
+        .small-input {
+            width: 100%; border: none; background: transparent; text-align: center; 
+            color: var(--accent-color); font-weight: 700; font-size: 11px; outline: none; pointer-events: none;
+        }
+
         .dock-bar {
             margin-top: auto; margin-bottom: 40px; width: 85%;
-            background: rgba(255, 255, 255, 0.35); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.35); backdrop-filter: blur(15px);
             border-radius: 32px; padding: 10px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; border: 1px solid rgba(255, 255, 255, 0.5);
         }
         .dock-icon { aspect-ratio: 2.2/1; background: #fff; border-radius: 20px; display: flex; align-items: center; border: var(--soft-border); overflow: hidden; }
+
+        /* --- 编辑模式逻辑 --- */
+        body.edit-mode .main-textarea, 
+        body.edit-mode .small-input, 
+        body.edit-mode .sig-input {
+            pointer-events: auto; user-select: text; background: rgba(0,0,0,0.025); box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04); border-radius: 8px;
+        }
 
         #settings-panel {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -137,7 +127,6 @@
             <img id="avatar-img" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Mizuki">
         </div>
         <input type="file" id="file-input" accept="image/*" onchange="handleFile(this)">
-        
         <div style="font-size: 19px; font-weight: 800;">瑞希</div>
         <div class="signature-box">
             <textarea class="sig-input" id="in-sig" rows="1" oninput="autoHeight(this)" onblur="saveData()">保持真实 · 2025</textarea>
@@ -145,15 +134,17 @@
     </div>
 
     <div class="middle-container">
-        <div class="main-widget"><input type="text" class="editable-input" id="in-main" value="(*^.^*)" onblur="saveData()"></div>
+        <div class="main-widget">
+            <textarea class="main-textarea" id="in-main" rows="1" oninput="autoHeight(this)" onblur="saveData()">(*^.^*)</textarea>
+        </div>
         <div class="side-apps">
-            <div class="small-app-box"><input type="text" class="editable-input" id="in-sub1" value="像素" onblur="saveData()"></div>
-            <div class="small-app-box"><input type="text" class="editable-input" id="in-sub2" value="相册" onblur="saveData()"></div>
+            <div class="small-app-box"><input type="text" class="small-input" id="in-sub1" value="像素" onblur="saveData()"></div>
+            <div class="small-app-box"><input type="text" class="small-input" id="in-sub2" value="相册" onblur="saveData()"></div>
         </div>
     </div>
 
     <nav class="dock-bar">
-        <div class="dock-icon"><input type="text" class="editable-input" id="in-dock" value="应用" onblur="saveData()"></div>
+        <div class="dock-icon"><input type="text" class="small-input" id="in-dock" value="应用" onblur="saveData()"></div>
         <div class="dock-icon" onclick="event.stopPropagation(); toggleSettings()">
             <div style="width:100%; text-align:center; font-size:12px; font-weight:600;">设置</div>
         </div>
@@ -186,7 +177,7 @@
                 if(saved) {
                     const el = document.getElementById(id);
                     el.value = saved;
-                    if(id === 'in-sig') autoHeight(el);
+                    if(el.tagName === 'TEXTAREA') autoHeight(el);
                 }
             });
             const ava = localStorage.getItem('m_ava_local');
@@ -196,7 +187,6 @@
             updateTime();
         };
 
-        // 签名档高度自适应逻辑
         function autoHeight(el) {
             el.style.height = 'auto';
             el.style.height = el.scrollHeight + 'px';
