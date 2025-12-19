@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>自定义AI手机-Pro测试版</title>
+    <style>
+        :root { --main-color: #ff99aa; --bg-color: #f5f5f5; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: -apple-system, sans-serif; background: #000; }
+        
+        /* 手机主屏 */
+        .phone-screen {
+            width: 100vw; height: 100vh;
+            background: linear-gradient(180deg, #f0f0f0 0%, #e0e0e0 100%);
+            display: flex; flex-direction: column; align-items: center; position: relative;
+        }
+
+        .status-bar { width: 90%; display: flex; justify-content: space-between; padding: env(safe-area-inset-top) 10px 10px; font-weight: bold; font-size: 14px; color: #333; }
+        .time-large { font-size: 70px; font-weight: 200; color: var(--main-color); margin-top: 40px; }
+
+        /* 图标布局 */
+        .icon-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 40px; width: 85%; }
+        .app-icon { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+        .icon-box { width: 60px; height: 60px; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; border: 2px solid #ffccdd; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .app-icon span { font-size: 12px; color: #666; margin-top: 5px; }
+
+        .dock { position: absolute; bottom: 30px; width: 90%; height: 80px; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); border-radius: 30px; display: flex; justify-content: space-around; align-items: center; }
+        .dock-icon { width: 50px; height: 50px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+
+        /* 页面框架 */
+        .full-page { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; flex-direction: column; background: var(--bg-color); }
+        .header { background: #ededed; padding: 45px 15px 10px; display: flex; align-items: center; border-bottom: 1px solid #ddd; }
+        .header-title { flex: 1; text-align: center; font-weight: bold; }
+
+        /* 聊天 */
+        #chat-content { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; }
+        .chat-row { display: flex; margin-bottom: 15px; }
+        .chat-row.me { justify-content: flex-end; }
+        .bubble { padding: 10px 14px; border-radius: 10px; max-width: 70%; font-size: 15px; line-height: 1.4; word-wrap: break-word; }
+        .target .bubble { background: white; border: 1px solid #eee; }
+        .me .bubble { background: #95ec69; }
+        .avatar { width: 40px; height: 40px; border-radius: 6px; margin: 0 10px; background: #eee; flex-shrink: 0; }
+
+        /* 输入框优化 */
+        .input-area { 
+            background: #f7f7f7; padding: 10px 10px calc(20px + env(safe-area-inset-bottom)); 
+            display: flex; border-top: 1px solid #ddd; 
+        }
+        #chat-input { flex: 1; border: 1px solid #ddd; padding: 10px 15px; border-radius: 20px; outline: none; font-size: 16px; background: white; }
+        .send-btn { background: var(--main-color); color: white; border: none; padding: 0 18px; border-radius: 20px; margin-left: 8px; font-weight: bold; }
+
+        /* 设置列表 */
+        .settings-list { padding: 15px; overflow-y: auto; flex: 1; }
+        .setting-card { background: white; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+        .setting-card label { display: block; font-size: 12px; color: #999; margin-bottom: 4px; }
+        .setting-card input { width: 100%; border: none; font-size: 15px; outline: none; background: transparent; }
+        .clear-btn { background: #ff4d4f; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; margin-top: 20px; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<div class="phone-screen">
+    <div class="status-bar"><span id="mini-time">00:00</span><span>📶 🔋100%</span></div>
+    <div class="time-large" id="clock">12:00</div>
+    
+    <div class="icon-grid">
+        <div class="app-icon" onclick="openPage('chat-page')"><div class="icon-box">💬</div><span>微信</span></div>
+        <div class="app-icon" onclick="openPage('settings-page')"><div class="icon-box">⚙️</div><span>设置</span></div>
+        <div class="app-icon" onclick="alert('测试版相册暂未开放')"><div class="icon-box">🖼️</div><span>相册</span></div>
+        <div class="app-icon" onclick="alert('测试版商店维护中')"><div class="icon-box">🛍️</div><span>小店</span></div>
+    </div>
+
+    <div class="dock">
+        <div class="dock-icon">📞</div>
+        <div class="dock-icon">📸</div>
+        <div class="dock-icon" onclick="location.reload()">🔄</div>
+    </div>
+
+    <div id="chat-page" class="full-page">
+        <div class="header">
+            <span onclick="closePage('chat-page')" style="width:40px; cursor:pointer;">◀</span>
+            <div class="header-title" id="chat-title">新朋友</div>
+            <span style="width:40px;"></span>
+        </div>
+        <div id="chat-content"></div>
+        <div class="input-area">
+            <input type="text" id="chat-input" placeholder="发个消息...">
+            <button class="send-btn" onclick="onSend()">发送</button>
+        </div>
+    </div>
+
+    <div id="settings-page" class="full-page">
+        <div class="header">
+            <span onclick="closePage('settings-page')" style="width:40px; cursor:pointer;">◀</span>
+            <div class="header-title">系统设置</div>
+            <span style="width:40px;"></span>
+        </div>
+        <div class="settings-list">
+            <div class="setting-card"><label>角色名字</label><input type="text" id="cfg-charName" placeholder="例如：真冬"></div>
+            <div class="setting-card"><label>角色头像(URL)</label><input type="text" id="cfg-charAvatar" placeholder="图片链接"></div>
+            <div class="setting-card"><label>你的昵称</label><input type="text" id="cfg-userName" placeholder="AI怎么称呼你"></div>
+            <div class="setting-card"><label>API Key</label><input type="password" id="cfg-apiKey" placeholder="sk-..."></div>
+            <div class="setting-card"><label>API 接口</label><input type="text" id="cfg-apiUrl" placeholder="https://api.openai.com/v1"></div>
+            <div class="setting-card"><label>模型名称</label><input type="text" id="cfg-model" placeholder="gpt-4o-mini"></div>
+            <button onclick="saveConfig()" style="width:100%; background:var(--main-color); color:white; border:none; padding:15px; border-radius:12px; font-weight:bold; margin-top:10px;">保存设置并刷新</button>
+            <button class="clear-btn" onclick="clearHistory()">清除聊天记忆</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let config = {
+        charName: localStorage.getItem('charName') || "新朋友",
+        charAvatar: localStorage.getItem('charAvatar') || "https://www.w3schools.com/howto/img_avatar8.png",
+        userName: localStorage.getItem('userName') || "用户",
+        apiKey: localStorage.getItem('apiKey') || "",
+        apiUrl: localStorage.getItem('apiUrl') || "https://api.openai.com/v1",
+        model: localStorage.getItem('model') || "gpt-4o-mini"
+    };
+
+    function updateTime() {
+        const now = new Date();
+        const t = now.toLocaleTimeString('zh-CN', {hour12:false, hour:'2-digit', minute:'2-digit'});
+        document.getElementById('clock').innerText = t;
+        document.getElementById('mini-time').innerText = t;
+    }
+    setInterval(updateTime, 1000); updateTime();
+    
+    // --- 【核心高级功能：初始化加载】 ---
+    window.onload = () => {
+        checkPWA(); // 执行环境检测
+        const history = JSON.parse(localStorage.getItem('chatHistory') || "[]");
+        history.forEach(msg => addBubble(msg.role, msg.text, null, false));
+        Object.keys(config).forEach(k => { if(document.getElementById('cfg-'+k)) document.getElementById('cfg-'+k).value = config[k]; });
+    };
+
+    // --- 【核心高级功能：环境检测】 ---
+    function checkPWA() {
+        if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
+            console.log("检测到 App 模式启动，优化 UI 排版");
+            document.body.style.border = "none";
+        }
+    }
+
+    function openPage(id) {
+        if(id === 'chat-page') document.getElementById('chat-title').innerText = config.charName;
+        document.getElementById(id).style.display = 'flex';
+        const content = document.getElementById('chat-content');
+        content.scrollTop = content.scrollHeight;
+    }
+    function closePage(id) { document.getElementById(id).style.display = 'none'; }
+
+    function saveConfig() {
+        Object.keys(config).forEach(k => {
+            const val = document.getElementById('cfg-'+k).value.trim();
+            if(val) localStorage.setItem(k, val);
+        });
+        alert("设置成功！✨");
+        location.reload();
+    }
+
+    function clearHistory() {
+        if(confirm("确定要删除所有聊天记录吗？")) {
+            localStorage.removeItem('chatHistory');
+            location.reload();
+        }
+    }
+
+    async function onSend() {
+        const input = document.getElementById('chat-input');
+        const text = input.value.trim();
+        if(!text || !config.apiKey) return alert("请先填写设置中的 API Key");
+
+        addBubble('me', text, null, true);
+        input.value = "";
+        const loadId = "L-" + Date.now();
+        addBubble('target', "正在输入...", loadId, false);
+
+        try {
+            const res = await fetch(`${config.apiUrl}/chat/completions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${config.apiKey}` },
+                body: JSON.stringify({
+                    model: config.model,
+                    messages: [
+                        {role:"system", content:`你是${config.charName}，对方是${config.userName}。请保持角色语气回复。`},
+                        ...getHistoryForAI(),
+                        {role:"user", content:text}
+                    ]
+                })
+            });
+            const data = await res.json();
+            const reply = data.choices[0].message.content;
+            document.getElementById(loadId).innerText = reply;
+            saveMessage('target', reply);
+        } catch(e) {
+            document.getElementById(loadId).innerText = "（信号不稳定，请检查设置）";
+        }
+    }
+
+    // --- 【核心高级功能：记录持久化】 ---
+    function addBubble(role, text, id = null, shouldSave = true) {
+        const container = document.getElementById('chat-content');
+        const row = document.createElement('div');
+        row.className = `chat-row ${role}`;
+        
+        const avatarImg = role === 'target' ? config.charAvatar : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+        const avatarHtml = `<img src="${avatarImg}" class="avatar">`;
+        const bubbleHtml = `<div class="bubble" ${id ? `id="${id}"` : ''}>${text}</div>`;
+        
+        row.innerHTML = role === 'target' ? avatarHtml + bubbleHtml : bubbleHtml + avatarHtml;
+        container.appendChild(row);
+        container.scrollTop = container.scrollHeight;
+        
+        if(shouldSave) saveMessage(role, text);
+    }
+
+    function saveMessage(role, text) {
+        let history = JSON.parse(localStorage.getItem('chatHistory') || "[]");
+        history.push({ role, text });
+        if(history.length > 50) history.shift();
+        localStorage.setItem('chatHistory', JSON.stringify(history));
+    }
+
+    function getHistoryForAI() {
+        let history = JSON.parse(localStorage.getItem('chatHistory') || "[]");
+        return history.slice(-6).map(m => ({
+            role: m.role === 'me' ? 'user' : 'assistant',
+            content: m.text
+        }));
+    }
+</script>
+</body>
+</html>
