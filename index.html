@@ -32,7 +32,7 @@
             color: var(--accent-color);
         }
 
-        /* --- iPhone 顶栏 --- */
+        /* --- iOS 风格顶栏 --- */
         .status-bar {
             width: 100%; height: 44px; display: flex; justify-content: space-between; align-items: center;
             padding: 0 4px; font-size: 12px; font-weight: 600;
@@ -46,19 +46,29 @@
         .battery-shell::after { content: ''; position: absolute; right: -3px; top: 2.5px; width: 1.5px; height: 4px; background: var(--accent-color); border-radius: 0 1px 1px 0; }
         .battery-level { width: 85%; height: 100%; background: var(--accent-color); border-radius: 1px; }
 
-        /* --- 个人卡片与签名 --- */
+        /* --- 个人卡片 --- */
         .mizuki-card {
             margin-top: 20px; width: 100%; background: var(--card-bg);
             backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%);
             border-radius: 38px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.8);
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04); text-align: center;
         }
-        .avatar-box { width: 90px; height: 90px; margin: 0 auto 12px; cursor: pointer; }
-        #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #fff; object-fit: cover; }
         
+        /* 头像点击区域优化 */
+        .avatar-box { 
+            width: 90px; height: 90px; margin: 0 auto 12px; 
+            cursor: pointer; position: relative;
+        }
+        #avatar-img { 
+            width: 100%; height: 100%; border-radius: 50%; 
+            border: 3px solid #fff; object-fit: cover; 
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .avatar-box:active #avatar-img { transform: scale(0.92); }
+        #file-input { display: none; }
+
+        /* 签名档稳定布局 */
         .signature-box { display: flex; justify-content: center; margin-top: 8px; width: 100%; }
-        
-        /* 签名输入框：固定宽度，去掉外部干扰 */
         .sig-input {
             background: transparent; border: none; outline: none;
             color: var(--accent-color); font-size: 10px; opacity: 0.4;
@@ -67,14 +77,13 @@
             transition: all 0.2s;
         }
 
-        /* --- 编辑模式样式 (统一组件逻辑) --- */
+        /* --- 编辑模式通用样式 --- */
         .editable-input {
             width: 100%; height: 100%; border: none; background: transparent;
             text-align: center; color: var(--accent-color); font-family: inherit;
             outline: none; font-weight: 700; pointer-events: none; border-radius: inherit;
         }
 
-        /* 开启编辑时的视觉提示：统一浅色背景，去除尖角 */
         body.edit-mode .editable-input, 
         body.edit-mode .sig-input {
             pointer-events: auto; user-select: text; 
@@ -82,7 +91,7 @@
             box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
         }
 
-        /* --- 桌面组件布局 --- */
+        /* --- 桌面组件 --- */
         .middle-container { display: flex; width: 100%; gap: 15px; margin-top: 25px; height: 160px; }
         .main-widget { flex: 1.8; background: rgba(255, 255, 255, 0.85); border-radius: 28px; border: var(--soft-border); display: flex; align-items: center; overflow: hidden; }
         .side-apps { flex: 1; display: flex; flex-direction: column; gap: 15px; }
@@ -127,8 +136,8 @@
             <img id="avatar-img" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Mizuki">
         </div>
         <input type="file" id="file-input" accept="image/*" onchange="handleFile(this)">
-        <div style="font-size: 19px; font-weight: 800;">瑞希</div>
         
+        <div style="font-size: 19px; font-weight: 800;">瑞希</div>
         <div class="signature-box">
             <input type="text" class="sig-input" id="in-sig" value="保持真实 · 2025" onblur="saveData()">
         </div>
