@@ -3,172 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mizuki OS v7.0</title>
+    <title>Mizuki OS Release v8.0</title>
     <style>
-        :root { --main-color: #ff99aa; --input-lift: 45px; --bg-img: none; }
+        :root { 
+            --main-color: #6c757d; 
+            --input-lift: 45px; 
+            --accent-green: #4caf50;
+            --bg-color: #f8f9fa;
+        }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; margin: 0; padding: 0; }
-        body, html { height: 100%; overflow: hidden; font-family: -apple-system, sans-serif; background: #f2f2f2; }
+        body, html { height: 100%; overflow: hidden; font-family: -apple-system, "SF Pro Display", "Helvetica Neue", Arial, sans-serif; background: var(--bg-color); }
 
         /* 主屏幕 */
         #phone-screen { 
             width: 100%; height: 100%; position: relative; z-index: 1; 
-            background: linear-gradient(180deg, #f0f5f0 0%, #d8e5d8 100%);
+            background: linear-gradient(180deg, #e9ecef 0%, #dee2e6 100%);
             background-size: cover; background-position: center;
             display: flex; flex-direction: column; align-items: center; 
         }
-        .status-bar { width: 100%; padding: 5px 20px; display: flex; justify-content: space-between; font-size: 12px; color: #333; margin-top: env(safe-area-inset-top); }
-        .time-large { font-size: 70px; font-weight: 200; color: var(--main-color); margin-top: 50px; text-shadow: 0 2px 10px rgba(255,255,255,0.5); }
+        .status-bar { width: 100%; padding: 8px 20px; display: flex; justify-content: space-between; font-size: 13px; color: #333; font-weight: 500; margin-top: env(safe-area-inset-top); }
+        .time-large { font-size: 80px; font-weight: 200; color: #343a40; margin-top: 60px; letter-spacing: -2px; }
 
+        /* 应用图标 */
         .icon-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 40px 25px; width: 100%; }
         .app-icon { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-        .icon-box { width: 60px; height: 60px; background: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .app-icon span { font-size: 12px; color: #666; margin-top: 8px; font-weight: 500; }
+        .icon-box { width: 62px; height: 62px; background: #ffffff; border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0,0,0,0.06); transition: transform 0.2s; border: 0.5px solid rgba(0,0,0,0.05); }
+        .icon-box.chat { background: #07c160; } /* 微信图标色 */
+        .icon-box.settings { background: #8e8e93; } /* 设置图标色 */
+        .app-icon:active .icon-box { transform: scale(0.92); }
+        .app-icon span { font-size: 12px; color: #495057; margin-top: 8px; font-weight: 500; }
 
-        /* 弹窗框架 (支持多层级) */
-        .full-page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f6f7f6; z-index: 1000; flex-direction: column; }
-        .sub-page { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #f6f7f6; z-index: 2000; flex-direction: column; }
+        /* 统一页面框架 */
+        .full-page { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f2f2f7; z-index: 1000; flex-direction: column; animation: slideIn 0.3s ease; }
+        .sub-page { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #f2f2f7; z-index: 2000; flex-direction: column; }
         
-        .header { padding: 50px 15px 15px; background: #fff; display: flex; align-items: center; border-bottom: 1px solid #eee; }
-        .header b { flex: 1; text-align: center; font-size: 17px; }
+        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* 设置列表项 */
-        .menu-list { margin: 20px 15px; background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
-        .menu-item { padding: 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f5f5f5; cursor: pointer; }
-        .menu-item:last-child { border-bottom: none; }
-        .menu-item:active { background: #fafafa; }
-        .menu-item span { font-size: 16px; color: #333; }
-        .arrow { color: #ccc; font-weight: bold; }
+        .header { padding: 50px 16px 12px; background: #ffffff; display: flex; align-items: center; border-bottom: 0.5px solid #d1d1d6; }
+        .header .btn-back { color: #007aff; font-size: 17px; cursor: pointer; min-width: 60px; }
+        .header h1 { flex: 1; text-align: center; font-size: 17px; font-weight: 600; color: #000; }
+        .header .btn-placeholder { min-width: 60px; }
 
-        /* 配置详情卡片 */
-        .config-card { background: white; margin: 15px; padding: 20px; border-radius: 15px; }
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 12px; color: #8e9e8e; margin-bottom: 8px; font-weight: bold; }
-        .input-group input, .input-group select { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; background: #f9f9f9; }
+        /* 列表与卡片 */
+        .list-group { margin: 20px 16px; background: #ffffff; border-radius: 12px; overflow: hidden; }
+        .list-item { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.5px solid #f2f2f7; cursor: pointer; }
+        .list-item:last-child { border-bottom: none; }
+        .list-item:active { background: #f2f2f7; }
+        .list-item label { font-size: 16px; color: #000; }
+        .chevron { color: #c7c7cc; font-size: 18px; }
 
-        /* 气泡预览 */
-        .bubble-preview { padding: 10px; background: #f0f0f0; border-radius: 10px; margin-top: 10px; display: flex; flex-direction: column; gap: 5px; }
-        .demo-bubble { padding: 8px 12px; border-radius: 15px; font-size: 13px; max-width: 70%; }
+        /* 配置详情 */
+        .config-section { padding: 20px 16px; }
+        .config-card { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+        .field { margin-bottom: 20px; }
+        .field:last-child { margin-bottom: 0; }
+        .field-label { display: block; font-size: 13px; color: #8e8e93; margin-bottom: 8px; font-weight: 400; }
+        .field input[type="text"], .field input[type="password"], .field select { width: 100%; padding: 12px; border: none; background: #f2f2f7; border-radius: 8px; font-size: 15px; }
+        
+        /* 按钮系统 */
+        .btn-primary { width: 100%; padding: 16px; background: #007aff; color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; margin-top: 10px; }
+        .btn-secondary { width: 100%; padding: 12px; background: transparent; color: #ff3b30; border: none; font-size: 14px; margin-top: 10px; }
 
-        /* 微信输入适配 */
-        .input-area { background: #fff; display: flex; align-items: center; padding: 10px 15px; border-top: 1px solid #eee; padding-bottom: calc(var(--input-lift) + env(safe-area-inset-bottom)); }
-        #chat-input { flex: 1; background: #f2f2f2; border: none; border-radius: 20px; padding: 10px 15px; }
-        #send-btn { margin-left: 10px; background: var(--main-color); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; }
+        /* 气泡与预览 */
+        .preview-area { background: #e5e5ea; padding: 20px; border-radius: 12px; margin-top: 10px; }
+        .msg-bubble { padding: 10px 14px; background: #34c759; color: #fff; font-size: 14px; align-self: flex-end; max-width: 80%; }
+
+        /* 通信界面 */
+        .chat-scroll { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; background: #f2f2f7; }
+        .input-bar { background: #fff; display: flex; align-items: center; padding: 10px 16px; border-top: 0.5px solid #d1d1d6; padding-bottom: calc(var(--input-lift) + env(safe-area-inset-bottom)); }
+        .input-bar input { flex: 1; background: #f2f2f7; border: none; border-radius: 20px; padding: 10px 16px; font-size: 16px; }
+        .btn-send { margin-left: 12px; color: #007aff; font-weight: 600; border: none; background: none; font-size: 16px; }
+
+        /* 提示框 */
+        #toast { display: none; position: fixed; bottom: 150px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; z-index: 10000; }
     </style>
 </head>
 <body>
 
 <div id="phone-screen">
-    <div class="status-bar"><span>21:35</span><span>📶🔋100%</span></div>
-    <div class="time-large" id="clock">21:35</div>
+    <div class="status-bar"><span id="mini-time">00:00</span><span>5G 100%</span></div>
+    <div class="time-large" id="clock">00:00</div>
     <div class="icon-grid">
-        <div class="app-icon" onclick="openPage('chat')"><div class="icon-box">💬</div><span>微信</span></div>
-        <div class="app-icon" onclick="openPage('settings')"><div class="icon-box">⚙️</div><span>设置</span></div>
-        <div class="app-icon"><div class="icon-box">🖼️</div><span>相册</span></div>
-        <div class="app-icon"><div class="icon-box">🛍️</div><span>小店</span></div>
+        <div class="app-icon" onclick="openPage('chat')"><div class="icon-box chat">💬</div><span>Messages</span></div>
+        <div class="app-icon" onclick="openPage('settings')"><div class="icon-box settings">⚙️</div><span>Settings</span></div>
     </div>
 </div>
 
 <div id="settings-page" class="full-page">
-    <div class="header"><span onclick="closePage('settings')">✕</span><b>设置</b><span></span></div>
-    <div class="menu-list">
-        <div class="menu-item" onclick="openSub('api-config')">
-            <span>🔑 API 配置</span><span class="arrow"> > </span>
+    <div class="header">
+        <span class="btn-back" onclick="closePage('settings')">关闭</span>
+        <h1>系统设置</h1>
+        <span class="btn-placeholder"></span>
+    </div>
+    <div class="list-group">
+        <div class="list-item" onclick="openSub('api-config')">
+            <label>API 基础配置</label><span class="chevron">></span>
         </div>
-        <div class="menu-item" onclick="openSub('ui-config')">
-            <span>🎨 个性化美化</span><span class="arrow"> > </span>
+        <div class="list-item" onclick="openSub('ui-config')">
+            <label>个性化美化</label><span class="chevron">></span>
         </div>
     </div>
     
     <div id="api-config" class="sub-page">
-        <div class="header"><span onclick="closeSub('api-config')"> < </span><b>API 配置</b><span></span></div>
-        <div class="config-card">
-            <div class="input-group">
-                <label>API KEY</label>
-                <input type="password" placeholder="请输入你的密钥..." id="api-key">
+        <div class="header">
+            <span class="btn-back" onclick="closeSub('api-config')">返回</span>
+            <h1>API 接口</h1>
+            <span class="btn-placeholder"></span>
+        </div>
+        <div class="config-section">
+            <div class="config-card">
+                <div class="field">
+                    <label class="field-label">接口密钥 (API KEY)</label>
+                    <input type="password" id="api-key" placeholder="输入密钥">
+                </div>
+                <div class="field">
+                    <label class="field-label">服务模型</label>
+                    <select>
+                        <option>gemini-1.5-pro</option>
+                        <option>gemini-1.5-flash</option>
+                    </select>
+                </div>
+                <button class="btn-primary" onclick="saveAPI()">应用配置</button>
             </div>
-            <div class="input-group">
-                <label>模型选择</label>
-                <select>
-                    <option>gemini-1.5-pro</option>
-                    <option>gemini-1.5-flash</option>
-                </select>
-            </div>
-            <button onclick="closeSub('api-config')" style="width:100%; padding:12px; background:var(--main-color); color:white; border:none; border-radius:10px; font-weight:bold;">保存配置</button>
         </div>
     </div>
 
     <div id="ui-config" class="sub-page">
-        <div class="header"><span onclick="closeSub('ui-config')"> < </span><b>美化中心</b><span></span></div>
-        <div class="config-card">
-            <div class="input-group">
-                <label>自定义桌面背景 (从本地选图)</label>
-                <input type="file" accept="image/*" onchange="loadWallpaper(event)">
-            </div>
-            <div class="input-group">
-                <label>聊天气泡圆角 (CSS)</label>
-                <input type="range" min="0" max="25" value="15" oninput="upRadius(this.value)">
-            </div>
-            <div class="bubble-preview">
-                <div id="demo-msg" class="demo-bubble" style="background:#95ec69; align-self:flex-end;">预览：瑞希你好呀！</div>
-            </div>
-            <div class="input-group" style="margin-top:20px;">
-                <label>躲避黑条高度</label>
-                <input type="range" min="10" max="120" id="l-range" oninput="upLift(this.value)">
+        <div class="header">
+            <span class="btn-back" onclick="closeSub('ui-config')">返回</span>
+            <h1>视觉与美化</h1>
+            <span class="btn-placeholder"></span>
+        </div>
+        <div class="config-section">
+            <div class="config-card">
+                <div class="field">
+                    <label class="field-label">更换壁纸</label>
+                    <input type="file" accept="image/*" onchange="loadWallpaper(event)" style="font-size: 12px;">
+                </div>
+                <div class="field">
+                    <label class="field-label">消息气泡圆角</label>
+                    <input type="range" min="0" max="25" id="radius-range" oninput="previewRadius(this.value)">
+                    <div class="preview-area" style="display: flex; flex-direction: column;">
+                        <div id="demo-bubble" class="msg-bubble">系统消息预览效果</div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="field-label">底部避空高度 (像素)</label>
+                    <input type="range" min="10" max="120" id="lift-range">
+                </div>
+                <button class="btn-primary" onclick="saveUI()">保存并应用设置</button>
+                <button class="btn-secondary" onclick="resetUI()">重置所有外观</button>
             </div>
         </div>
     </div>
 </div>
 
 <div id="chat-page" class="full-page">
-    <div class="header"><span onclick="closePage('chat')">✕</span><b>新朋友</b><span></span></div>
-    <div id="chat-content" style="flex:1; overflow-y:auto; padding:15px; display:flex; flex-direction:column;"></div>
-    <div class="input-area">
-        <input type="text" id="chat-input" placeholder="发个消息...">
-        <button id="send-btn" onclick="sendMessage()">送</button>
+    <div class="header">
+        <span class="btn-back" onclick="closePage('chat')">返回</span>
+        <h1>沟通记录</h1>
+        <span class="btn-placeholder"></span>
+    </div>
+    <div id="chat-content" class="chat-scroll"></div>
+    <div class="input-bar">
+        <input type="text" id="chat-input" placeholder="输入内容...">
+        <button class="btn-send" onclick="sendMessage()">发送</button>
     </div>
 </div>
 
+<div id="toast">已成功保存设置</div>
+
 <script>
+    // 时间逻辑
     function updateClock() {
         const d = new Date();
         const t = d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
         document.getElementById('clock').innerText = t;
+        document.getElementById('mini-time').innerText = t;
     }
     setInterval(updateClock, 1000); updateClock();
 
-    // 页面控制逻辑
+    // 导航逻辑
     function openPage(id) { document.getElementById(id + '-page').style.display = 'flex'; }
     function closePage(id) { document.getElementById(id + '-page').style.display = 'none'; }
     function openSub(id) { document.getElementById(id).style.display = 'flex'; }
     function closeSub(id) { document.getElementById(id).style.display = 'none'; }
 
-    // 背景图加载逻辑 (重点！)
+    // 提示逻辑
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 2000);
+    }
+
+    // 美化逻辑
     function loadWallpaper(event) {
         const file = event.target.files[0];
+        if(!file) return;
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = (e) => {
             document.getElementById('phone-screen').style.backgroundImage = `url(${e.target.result})`;
-            localStorage.setItem('custom-bg', e.target.result);
+            localStorage.setItem('m_bg', e.target.result);
         };
         reader.readAsDataURL(file);
     }
 
-    // 气泡与高度逻辑
-    function upRadius(v) {
-        document.getElementById('demo-msg').style.borderRadius = v + 'px';
-        localStorage.setItem('bubble-r', v);
+    function previewRadius(v) {
+        document.getElementById('demo-bubble').style.borderRadius = v + 'px';
     }
-    function upLift(v) { 
-        document.documentElement.style.setProperty('--input-lift', v + 'px'); 
-        localStorage.setItem('ml', v); 
+
+    function saveUI() {
+        const radius = document.getElementById('radius-range').value;
+        const lift = document.getElementById('lift-range').value;
+        localStorage.setItem('m_radius', radius);
+        localStorage.setItem('m_lift', lift);
+        document.documentElement.style.setProperty('--input-lift', lift + 'px');
+        showToast('美化配置已生效');
+    }
+
+    function saveAPI() {
+        localStorage.setItem('m_apikey', document.getElementById('api-key').value);
+        showToast('API配置已应用');
+    }
+
+    function resetUI() {
+        if(confirm('确定要恢复出厂外观设置吗？')) {
+            localStorage.clear();
+            location.reload();
+        }
     }
 
     function sendMessage() {
         const i = document.getElementById('chat-input');
         if(!i.value) return;
         const d = document.createElement('div');
-        const radius = localStorage.getItem('bubble-r') || '15';
-        d.style = `align-self:flex-end; background:#95ec69; padding:10px 14px; border-radius:${radius}px; margin-bottom:12px; max-width:80%; font-size:15px;`;
+        const r = localStorage.getItem('m_radius') || '15';
+        d.className = 'msg-bubble';
+        d.style.borderRadius = r + 'px';
+        d.style.marginBottom = '12px';
         d.innerText = i.value;
         document.getElementById('chat-content').appendChild(d);
         i.value = '';
@@ -176,15 +249,15 @@
     }
 
     window.onload = () => {
-        // 恢复所有设置
-        const savedBg = localStorage.getItem('custom-bg');
-        if(savedBg) document.getElementById('phone-screen').style.backgroundImage = `url(${savedBg})`;
+        const bg = localStorage.getItem('m_bg');
+        if(bg) document.getElementById('phone-screen').style.backgroundImage = `url(${bg})`;
         
-        const ml = localStorage.getItem('ml') || '45';
-        upLift(ml); document.getElementById('l-range').value = ml;
-        
-        const br = localStorage.getItem('bubble-r') || '15';
-        upRadius(br);
+        const radius = localStorage.getItem('m_radius') || '15';
+        const lift = localStorage.getItem('m_lift') || '45';
+        document.getElementById('radius-range').value = radius;
+        document.getElementById('lift-range').value = lift;
+        previewRadius(radius);
+        document.documentElement.style.setProperty('--input-lift', lift + 'px');
     };
 </script>
 </body>
