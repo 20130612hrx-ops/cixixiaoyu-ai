@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Mizuki">
@@ -12,15 +11,11 @@
         :root {
             --mizuki-bg: #f9f4f5;
             --card-bg: rgba(255, 255, 255, 0.65);
-            --soft-border: 1px solid rgba(120, 100, 100, 0.15);
+            --soft-border: 1px solid rgba(120, 100, 100, 0.12);
             --accent-color: #8b7d7d; 
         }
 
-        * {
-            -webkit-tap-highlight-color: transparent;
-            box-sizing: border-box;
-            user-select: none;
-        }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; user-select: none; }
 
         body {
             margin: 0;
@@ -38,6 +33,7 @@
             color: var(--accent-color);
         }
 
+        /* 顶部状态栏 */
         .status-bar {
             width: 100%;
             display: flex;
@@ -48,6 +44,7 @@
             font-family: monospace;
         }
 
+        /* 个人卡片 */
         .mizuki-card {
             margin-top: 20px;
             width: 100%;
@@ -65,65 +62,22 @@
 
         .avatar-box {
             position: relative;
-            width: 90px;
-            height: 90px;
+            width: 90px; height: 90px;
             margin: 0 auto 12px;
             cursor: pointer;
             transition: transform 0.2s;
         }
-
         .avatar-box:active { transform: scale(0.95); }
-
-        #avatar-img {
-            width: 100%; height: 100%;
-            border-radius: 50%;
-            border: 3px solid #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            object-fit: cover;
-        }
-
-        /* 隐藏的上传控件 */
+        #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.06); object-fit: cover; }
         #file-input { display: none; }
 
-        .middle-container {
-            display: flex;
-            width: 100%;
-            gap: 15px;
-            margin-top: 25px;
-            height: 160px;
-        }
+        /* 中间组件 */
+        .middle-container { display: flex; width: 100%; gap: 15px; margin-top: 25px; height: 160px; }
+        .main-widget { flex: 1.8; background: rgba(255, 255, 255, 0.85); border-radius: 28px; border: var(--soft-border); display: flex; justify-content: center; align-items: center; font-size: 15px; }
+        .side-apps { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+        .small-app-box { flex: 1; background: rgba(255, 255, 255, 0.85); border-radius: 18px; border: var(--soft-border); display: flex; justify-content: center; align-items: center; font-size: 10px; font-weight: 700; }
 
-        .main-widget {
-            flex: 1.8;
-            background: rgba(255, 255, 255, 0.85);
-            border-radius: 28px;
-            border: var(--soft-border);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 15px;
-            color: var(--accent-color);
-        }
-
-        .side-apps {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .small-app-box {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.85);
-            border-radius: 18px;
-            border: var(--soft-border);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 10px;
-            font-weight: 700;
-        }
-
+        /* 底部 Dock */
         .dock-bar {
             margin-top: auto;
             margin-bottom: 40px;
@@ -138,28 +92,61 @@
             gap: 10px;
             border: 1px solid rgba(255, 255, 255, 0.5);
         }
+        .dock-icon { aspect-ratio: 1/1; background: #fff; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 11px; font-weight: 600; border: var(--soft-border); }
 
-        .dock-icon {
-            aspect-ratio: 1/1;
-            background: #fff;
-            border-radius: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 11px;
-            font-weight: 600;
-            border: var(--soft-border);
-        }
-
+        /* --- 优化后的设置面板 --- */
         #settings-panel {
             display: none;
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: #fff;
+            background: rgba(249, 244, 245, 0.8); /* 柔和的底色 */
+            backdrop-filter: blur(40px) saturate(150%);
+            -webkit-backdrop-filter: blur(40px) saturate(150%);
             z-index: 9999;
-            padding: 60px 30px;
+            padding: 80px 30px;
+            flex-direction: column;
+            align-items: center;
         }
+
+        .settings-card {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 30px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            margin-bottom: 30px;
+        }
+
+        .settings-title {
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 10px; font-weight: 800; margin-bottom: 8px; opacity: 0.5; text-indent: 5px; }
+        .input-group input { 
+            width: 100%; padding: 16px; 
+            border: var(--soft-border); border-radius: 18px; 
+            background: rgba(255, 255, 255, 0.5); 
+            outline: none; font-size: 14px; color: var(--accent-color);
+            transition: background 0.3s;
+        }
+        .input-group input:focus { background: #fff; }
+
+        .btn-done { 
+            width: 100%; padding: 18px; 
+            background: var(--accent-color); 
+            color: #fff; border: none; border-radius: 22px; 
+            font-weight: 800; font-size: 13px; letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(139, 125, 125, 0.2);
+        }
+        .btn-cancel { margin-top: 20px; background: none; border: none; color: var(--accent-color); opacity: 0.4; font-size: 12px; font-weight: 600; }
     </style>
 </head>
 <body onclick="triggerHaptic()">
@@ -195,13 +182,20 @@
     </nav>
 
     <div id="settings-panel">
-        <h2 style="text-align:center; font-size: 18px; letter-spacing: 2px;">CONFIG</h2>
-        <div style="margin-bottom:25px;">
-            <label style="font-size:10px; font-weight:bold; color:#aaa;">WIDGET TEXT</label>
-            <input type="text" id="input-widget" style="width:100%; padding:14px; border:1px solid #eee; border-radius:12px; outline:none;">
+        <div class="settings-title">SYSTEM CONFIG</div>
+        
+        <div class="settings-card">
+            <div class="input-group">
+                <label>WIDGET TEXT</label>
+                <input type="text" id="input-widget" placeholder="Enter text or emoji...">
+            </div>
+            <div style="font-size: 9px; opacity: 0.4; text-align: center; margin-top: 10px;">
+                Tip: Click avatar on home to change photo
+            </div>
         </div>
-        <button onclick="saveSettings()" style="width:100%; padding:16px; background:#555; color:#fff; border:none; border-radius:16px; font-weight:bold;">SAVE</button>
-        <button onclick="toggleSettings()" style="width:100%; background:none; border:none; margin-top:25px; color:#ccc;">CLOSE</button>
+
+        <button class="btn-done" onclick="saveSettings()">DONE</button>
+        <button class="btn-cancel" onclick="toggleSettings()">CANCEL</button>
     </div>
 
     <script>
@@ -223,7 +217,6 @@
         }
         setInterval(updateTime, 1000);
 
-        // 本地文件处理逻辑：将图片转为 Base64 存储
         function handleFile(input) {
             triggerHaptic();
             const file = input.files[0];
@@ -232,7 +225,6 @@
                 reader.onload = function(e) {
                     const base64Data = e.target.result;
                     document.getElementById('avatar-img').src = base64Data;
-                    // 保存到本地，下次打开依然是这张图
                     localStorage.setItem('m_ava_local', base64Data);
                 };
                 reader.readAsDataURL(file);
@@ -242,7 +234,7 @@
         function toggleSettings() {
             triggerHaptic();
             const p = document.getElementById('settings-panel');
-            p.style.display = p.style.display === 'none' ? 'block' : 'none';
+            p.style.display = (p.style.display === 'flex') ? 'none' : 'flex';
         }
 
         function saveSettings() {
