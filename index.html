@@ -8,11 +8,12 @@
     
     <style>
         :root {
-            --mizuki-bg: #f9f4f5;
-            --card-bg: rgba(255, 255, 255, 0.65);
-            --soft-border: 1px solid rgba(120, 100, 100, 0.12);
-            --accent-color: #8b7d7d; 
-            --widget-shadow: 0 8px 24px rgba(139, 125, 125, 0.08);
+            /* 默认背景：柔和夕阳 */
+            --mizuki-bg: linear-gradient(135deg, #fceef0 0%, #e8e0f5 100%);
+            --card-bg: rgba(255, 255, 255, 0.45);
+            --soft-border: 1px solid rgba(255, 255, 255, 0.5);
+            --accent-color: #6e6464; 
+            --widget-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
         }
 
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; user-select: none; }
@@ -20,19 +21,24 @@
         body {
             margin: 0;
             padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom);
-            background-color: var(--mizuki-bg);
-            background-image: radial-gradient(#e2d5d5 0.8px, transparent 0);
-            background-size: 24px 24px;
+            background: var(--mizuki-bg);
             height: 100vh;
             display: flex; flex-direction: column; align-items: center;
             font-family: -apple-system, "PingFang SC", sans-serif;
-            overflow: hidden; transition: background 0.5s ease; color: var(--accent-color);
+            overflow: hidden; transition: all 0.8s ease; color: var(--accent-color);
+            position: relative;
+        }
+
+        /* 背景装饰球：增加灵动感 */
+        body::before {
+            content: ''; position: absolute; top: -10%; left: -10%; width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%); z-index: -1;
         }
 
         /* --- iOS 顶栏 --- */
         .status-bar {
             width: 100%; height: 44px; display: flex; justify-content: space-between; align-items: center;
-            padding: 0 4px; font-size: 12px; font-weight: 600;
+            padding: 0 4px; font-size: 12px; font-weight: 600; z-index: 10;
         }
         .status-left { flex: 1; padding-left: 12px; }
         .status-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 6px; padding-right: 12px; }
@@ -43,29 +49,29 @@
         .battery-shell::after { content: ''; position: absolute; right: -3.5px; top: 2.8px; width: 1.5px; height: 4px; background: var(--accent-color); border-radius: 0 1px 1px 0; }
         .battery-level { width: 85%; height: 100%; background: var(--accent-color); border-radius: 1px; }
 
-        /* --- 个人卡片 (优化呼吸感) --- */
+        /* --- 个人卡片 (磨砂玻璃) --- */
         .mizuki-card {
             margin-top: 15px; width: 100%; background: var(--card-bg);
-            backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%);
-            border-radius: 32px; padding: 28px 20px; border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); text-align: center;
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-radius: 35px; padding: 30px 20px; border: var(--soft-border);
+            box-shadow: var(--widget-shadow); text-align: center;
         }
-        .avatar-box { width: 85px; height: 85px; margin: 0 auto 15px; cursor: pointer; transition: 0.2s; }
-        .avatar-box:active { transform: scale(0.95); }
-        #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #fff; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        #file-input { display: none; }
+        .avatar-box { width: 85px; height: 85px; margin: 0 auto 15px; cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .avatar-box:active { transform: scale(0.9); }
+        #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #fff; object-fit: cover; }
         
         .signature-box { display: flex; justify-content: center; margin-top: 8px; width: 100%; }
         .sig-input {
-            background: transparent; border: none; outline: none; color: var(--accent-color); font-size: 10px; opacity: 0.4;
-            text-align: center; width: 80%; pointer-events: none; resize: none; overflow: hidden; line-height: 1.5;
+            background: transparent; border: none; outline: none; color: var(--accent-color); font-size: 10px; opacity: 0.5;
+            text-align: center; width: 85%; pointer-events: none; resize: none; overflow: hidden; line-height: 1.5; font-family: inherit;
         }
 
-        /* --- 桌面组件 (优化间距与投影) --- */
-        .middle-container { display: flex; width: 100%; gap: 15px; margin-top: 20px; height: 155px; }
+        /* --- 桌面组件 --- */
+        .middle-container { display: flex; width: 100%; gap: 18px; margin-top: 25px; height: 150px; }
         
         .main-widget { 
-            flex: 1.8; background: rgba(255, 255, 255, 0.88); border-radius: 26px; 
+            flex: 1.6; background: rgba(255, 255, 255, 0.5); border-radius: 28px; 
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border: var(--soft-border); display: flex; align-items: center; justify-content: center; 
             padding: 15px; box-shadow: var(--widget-shadow);
         }
@@ -75,49 +81,51 @@
             resize: none; overflow: hidden; pointer-events: none; line-height: 1.3;
         }
 
-        .side-apps { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+        .side-apps { flex: 1; display: flex; flex-direction: column; gap: 15px; }
         .small-app-box { 
-            flex: 1; background: rgba(255, 255, 255, 0.88); border-radius: 20px; 
+            flex: 1; background: rgba(255, 255, 255, 0.5); border-radius: 20px; 
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border: var(--soft-border); display: flex; align-items: center; box-shadow: var(--widget-shadow);
         }
         .small-input {
             width: 100%; border: none; background: transparent; text-align: center; 
-            color: var(--accent-color); font-weight: 700; font-size: 11px; outline: none; pointer-events: none;
+            color: var(--accent-color); font-weight: 700; font-size: 12px; outline: none; pointer-events: none;
         }
 
-        /* --- Dock 优化 --- */
+        /* --- Dock --- */
         .dock-bar {
-            margin-top: auto; margin-bottom: 35px; width: 90%;
-            background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-radius: 30px; padding: 12px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; border: 1px solid rgba(255, 255, 255, 0.4);
+            margin-top: auto; margin-bottom: 35px; width: 92%;
+            background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-radius: 35px; padding: 12px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; border: var(--soft-border);
         }
         .dock-icon { 
-            aspect-ratio: 2.3/1; background: rgba(255,255,255,0.9); border-radius: 18px; 
-            display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.5); 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            aspect-ratio: 2.4/1; background: rgba(255,255,255,0.6); border-radius: 22px; 
+            display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.4); 
         }
 
         /* --- 编辑模式 --- */
         body.edit-mode .main-textarea, 
         body.edit-mode .small-input, 
         body.edit-mode .sig-input {
-            pointer-events: auto; background: rgba(0,0,0,0.03); border-radius: 6px;
+            pointer-events: auto; background: rgba(255,255,255,0.3); border-radius: 8px;
         }
 
         /* 设置面板 */
         #settings-panel {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(249, 244, 245, 0.85); backdrop-filter: blur(40px); z-index: 9999;
-            padding: 60px 30px; flex-direction: column; align-items: center;
+            background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(50px); -webkit-backdrop-filter: blur(50px);
+            z-index: 9999; padding: 60px 30px; flex-direction: column; align-items: center;
         }
-        .settings-card { width: 100%; background: rgba(255, 255, 255, 0.7); border-radius: 28px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.8); }
-        .switch-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .toggle-btn { width: 48px; height: 26px; background: #ddd; border-radius: 13px; position: relative; transition: 0.3s; }
+        .settings-card { width: 100%; background: rgba(255, 255, 255, 0.6); border-radius: 30px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.8); }
+        .switch-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .toggle-btn { width: 48px; height: 26px; background: rgba(0,0,0,0.1); border-radius: 13px; position: relative; transition: 0.3s; }
         .toggle-btn::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: 0.3s; }
         .toggle-btn.active { background: #8b7d7d; }
         .toggle-btn.active::after { left: 25px; }
-        .color-dot { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #fff; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .btn-done { width: 100%; padding: 16px; background: var(--accent-color); color: #fff; border: none; border-radius: 20px; font-weight: 700; margin-top: 25px; }
+        
+        .color-dot { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #fff; cursor: pointer; transition: 0.2s; }
+        .color-dot:active { transform: scale(0.8); }
+        .btn-done { width: 100%; padding: 18px; background: #8b7d7d; color: #fff; border: none; border-radius: 22px; font-weight: 700; margin-top: 30px; }
     </style>
 </head>
 <body onclick="triggerHaptic()">
@@ -126,7 +134,7 @@
         <div class="status-left"><span id="live-time">09:41</span></div>
         <div class="status-right">
             <div class="signal-bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-            <span style="font-size:10px; opacity: 0.8">Wi-Fi</span>
+            <span style="font-size:10px; opacity: 0.8">5G</span>
             <div class="battery-shell"><div class="battery-level"></div></div>
         </div>
     </div>
@@ -136,9 +144,9 @@
             <img id="avatar-img" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Mizuki">
         </div>
         <input type="file" id="file-input" accept="image/*" onchange="handleFile(this)">
-        <div style="font-size: 18px; font-weight: 800; letter-spacing: 1px;">瑞希</div>
+        <div style="font-size: 20px; font-weight: 800; letter-spacing: 1px;">瑞希</div>
         <div class="signature-box">
-            <textarea class="sig-input" id="in-sig" rows="1" oninput="autoHeight(this)" onblur="saveData()">保持真实 · 2025</textarea>
+            <textarea class="sig-input" id="in-sig" rows="1" oninput="autoHeight(this)" onblur="saveData()">在这里写下今日流光...</textarea>
         </div>
     </div>
 
@@ -155,25 +163,25 @@
     <nav class="dock-bar">
         <div class="dock-icon"><input type="text" class="small-input" id="in-dock" value="应用" onblur="saveData()"></div>
         <div class="dock-icon" onclick="event.stopPropagation(); toggleSettings()">
-            <div style="width:100%; text-align:center; font-size:12px; font-weight:600;">设置</div>
+            <div style="width:100%; text-align:center; font-size:12px; font-weight:600; opacity: 0.8;">设置</div>
         </div>
     </nav>
 
     <div id="settings-panel">
-        <div style="font-size: 15px; font-weight: 800; margin-bottom: 25px; opacity: 0.6;">系统配置</div>
+        <div style="font-size: 16px; font-weight: 800; margin-bottom: 25px; opacity: 0.6; color: #444;">背景氛围</div>
         <div class="settings-card">
             <div class="switch-group">
-                <span style="font-size: 13px; font-weight: 700; opacity: 0.8;">编辑桌面文字</span>
+                <span style="font-size: 14px; font-weight: 700; opacity: 0.8;">编辑桌面文字</span>
                 <div id="edit-toggle" class="toggle-btn" onclick="toggleEditMode()"></div>
             </div>
             <hr style="border: none; border-top: 1px solid rgba(0,0,0,0.05); margin: 20px 0;">
-            <div style="display: flex; gap: 15px; justify-content: center;">
-                <div class="color-dot" style="background: #f9f4f5;" onclick="changeBg(0)"></div>
-                <div class="color-dot" style="background: #e5e0e1;" onclick="changeBg(1)"></div>
-                <div class="color-dot" style="background: #f0f0f5;" onclick="changeBg(2)"></div>
+            <div style="display: flex; gap: 20px; justify-content: center;">
+                <div class="color-dot" style="background: linear-gradient(135deg, #fceef0, #e8e0f5);" onclick="changeBg(0)"></div>
+                <div class="color-dot" style="background: linear-gradient(135deg, #e0f2f1, #e1f5fe);" onclick="changeBg(1)"></div>
+                <div class="color-dot" style="background: linear-gradient(135deg, #f3f9a7, #cac531);" onclick="changeBg(2)"></div>
             </div>
         </div>
-        <button class="btn-done" onclick="toggleSettings()">返回桌面</button>
+        <button class="btn-done" onclick="toggleSettings()">保存布局</button>
     </div>
 
     <script>
@@ -192,7 +200,7 @@
             const ava = localStorage.getItem('m_ava_local');
             const bg = localStorage.getItem('m_bg_choice');
             if(ava) document.getElementById('avatar-img').src = ava;
-            if(bg) document.body.style.backgroundColor = bg;
+            if(bg) document.body.style.background = bg;
             updateTime();
         };
 
@@ -245,8 +253,12 @@
 
         function changeBg(i) {
             triggerHaptic();
-            const bgs = ['#f9f4f5', '#e5e0e1', '#f0f0f5'];
-            document.body.style.backgroundColor = bgs[i];
+            const bgs = [
+                'linear-gradient(135deg, #fceef0 0%, #e8e0f5 100%)',
+                'linear-gradient(135deg, #e0f2f1 0%, #e1f5fe 100%)',
+                'linear-gradient(135deg, #f3f9a7 0%, #cac531 100%)'
+            ];
+            document.body.style.background = bgs[i];
             localStorage.setItem('m_bg_choice', bgs[i]);
         }
     </script>
