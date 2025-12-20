@@ -6,209 +6,194 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
         :root {
-            --mizuki-pink: #f4e8e9;
-            --glass: rgba(255, 255, 255, 0.7);
+            --bg-color: #ffffff;
+            --glass: rgba(255, 255, 255, 0.85);
             --accent: #8b7d7d;
+            --soft-shadow: 0 8px 20px rgba(0,0,0,0.04);
         }
 
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; user-select: none; }
 
         body {
-            margin: 0; padding: env(safe-area-inset-top) 20px 40px;
-            background: var(--mizuki-pink);
-            /* 模拟第一张图的点阵背景 */
-            background-image: radial-gradient(#d1c2c2 1px, transparent 0);
-            background-size: 20px 20px;
+            margin: 0; padding: env(safe-area-inset-top) 20px 0;
+            background: var(--bg-color);
+            /* 模拟兔k底纹：星星与十字星 */
+            background-image: radial-gradient(circle, #f0f0f0 1px, transparent 0);
+            background-size: 30px 30px;
             height: 100vh; font-family: -apple-system, sans-serif;
             display: flex; flex-direction: column; align-items: center;
-            color: var(--accent); overflow: hidden;
+            color: var(--accent); overflow: hidden; position: relative;
         }
 
-        /* 背景点缀物（模拟参考图中的云朵/小兔子） */
-        .deco { position: absolute; opacity: 0.4; z-index: -1; pointer-events: none; font-size: 24px; }
+        /* 边框蕾丝装饰 */
+        body::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            border: 15px solid transparent;
+            border-image: radial-gradient(circle, #eee 40%, transparent 41%) 20%;
+            pointer-events: none; opacity: 0.5;
+        }
 
         /* --- 顶部状态栏 --- */
         .status-bar {
             width: 100%; height: 44px; display: flex; justify-content: space-between; align-items: center;
-            font-size: 12px; font-weight: bold; margin-bottom: 10px;
+            font-size: 12px; font-weight: bold; padding: 0 5px;
         }
 
-        /* --- 核心个人卡片 (参考图2风格) --- */
+        /* --- 兔k 风格个人卡片 --- */
         .profile-card {
             width: 100%; background: var(--glass);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-radius: 30px; padding: 25px 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-            text-align: center; border: 1px solid rgba(255,255,255,0.8);
-            position: relative;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-radius: 40px; padding: 35px 20px;
+            box-shadow: var(--soft-shadow);
+            text-align: center; border: 1px solid rgba(255,255,255,1);
+            position: relative; margin-top: 10px;
         }
         
-        /* 考拉装饰位 */
-        .profile-card::after {
-            content: '🐨'; position: absolute; top: -15px; right: 20px; font-size: 40px;
-        }
+        /* 顶部小装饰 */
+        .card-deco { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); font-size: 10px; opacity: 0.3; }
 
-        .avatar-box { width: 80px; height: 80px; margin: 0 auto 10px; cursor: pointer; }
-        #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #fff; object-fit: cover; }
+        .avatar-box { width: 85px; height: 85px; margin: 0 auto 12px; cursor: pointer; position: relative; }
+        #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 4px solid #fff; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         
-        .name-title { font-size: 18px; font-weight: 900; margin-bottom: 4px; }
-        .handle { font-size: 10px; opacity: 0.5; margin-bottom: 10px; display: block; }
+        .name-title { font-size: 18px; font-weight: 900; margin-bottom: 2px; letter-spacing: 0.5px; }
+        .handle { font-size: 10px; opacity: 0.4; margin-bottom: 12px; display: block; }
+        .geo-tag { font-size: 9px; opacity: 0.4; background: #f5f5f5; padding: 2px 8px; border-radius: 10px; }
 
-        /* 多行签名档 */
         .sig-input {
-            width: 90%; background: transparent; border: none; outline: none;
+            width: 100%; background: transparent; border: none; outline: none;
             color: var(--accent); font-size: 11px; text-align: center;
-            resize: none; overflow: hidden; line-height: 1.5; pointer-events: none;
+            resize: none; overflow: hidden; line-height: 1.6; pointer-events: none; margin-top: 10px;
         }
 
-        /* --- 中间组件区 (错落分布) --- */
-        .widgets-grid {
-            width: 100%; display: grid; grid-template-columns: 1.2fr 1fr; gap: 15px; margin-top: 30px;
+        /* --- 组件区 --- */
+        .widgets-container {
+            width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px;
         }
 
-        .widget-item {
-            background: var(--glass); border-radius: 20px; border: 1px solid rgba(255,255,255,0.8);
-            display: flex; align-items: center; justify-content: center; padding: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.02); min-height: 80px;
+        .widget-box {
+            background: var(--glass); border-radius: 25px; border: 1px solid #fff;
+            padding: 15px; box-shadow: var(--soft-shadow); text-align: center;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 90px;
         }
 
         .widget-textarea {
             width: 100%; background: transparent; border: none; outline: none;
             text-align: center; color: var(--accent); font-weight: bold;
-            font-size: 14px; resize: none; overflow: hidden; pointer-events: none;
+            font-size: 13px; resize: none; overflow: hidden; pointer-events: none;
         }
 
-        /* 右侧两个小盒子 */
-        .side-stack { display: flex; flex-direction: column; gap: 12px; }
-        .mini-box { 
-            height: 60px; background: var(--glass); border-radius: 18px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-size: 10px; font-weight: bold; border: 1px solid rgba(255,255,255,0.8);
-        }
-        .mini-box input { 
-            width: 100%; border: none; background: transparent; text-align: center; 
-            outline: none; color: var(--accent); font-size: 11px; pointer-events: none;
-        }
-
-        /* --- 底部工具栏 (参考图2圆润感) --- */
+        /* --- 图标化 Dock 栏 --- */
         .dock {
-            margin-top: auto; width: 100%; height: 70px;
-            background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px);
-            border-radius: 35px; display: flex; align-items: center; justify-content: space-around;
-            padding: 0 10px; border: 1px solid rgba(255,255,255,0.5);
+            margin-top: auto; margin-bottom: 30px; width: 100%; height: 75px;
+            background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(15px);
+            border-radius: 40px; display: flex; align-items: center; justify-content: space-around;
+            padding: 0 15px; border: 1px solid #fff; box-shadow: var(--soft-shadow);
         }
-        .dock-item { width: 50px; height: 50px; background: #fff; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; }
+        .dock-btn { 
+            width: 50px; height: 50px; background: #fff; border-radius: 20px; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 18px; box-shadow: 0 4px 8px rgba(0,0,0,0.03); 
+            transition: 0.2s;
+        }
+        .dock-btn:active { transform: scale(0.9); }
 
-        /* --- 编辑模式提示 --- */
-        body.edit-mode .sig-input, 
-        body.edit-mode .widget-textarea, 
-        body.edit-mode input {
-            pointer-events: auto; background: rgba(255,255,255,0.5); border-radius: 4px;
+        /* 编辑模式 */
+        body.edit-mode .sig-input, body.edit-mode .widget-textarea, body.edit-mode input {
+            pointer-events: auto; background: rgba(0,0,0,0.02); border-radius: 8px;
         }
 
-        /* 设置按钮隐藏在角落 */
-        .setting-trigger { position: fixed; bottom: 15px; right: 20px; opacity: 0.3; font-size: 12px; }
-
-        #settings {
+        #settings-ui {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(244, 232, 233, 0.95); z-index: 100; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(255, 255, 255, 0.9); z-index: 100; flex-direction: column; align-items: center; justify-content: center;
         }
-        .btn { padding: 15px 40px; background: #fff; border-radius: 20px; border: none; font-weight: bold; color: var(--accent); margin: 10px; box-shadow: 0 5px 10px rgba(0,0,0,0.05); }
+        .btn-ui { padding: 15px 50px; background: #fff; border-radius: 25px; border: 1px solid #eee; font-weight: bold; color: var(--accent); margin: 10px; }
     </style>
 </head>
-<body onclick="vibrate()">
-
-    <div class="deco" style="top:10%; left:5%;">☁️</div>
-    <div class="deco" style="bottom:25%; right:10%;">✨</div>
+<body onclick="haptic()">
 
     <div class="status-bar">
-        <div id="time">13:03</div>
-        <div>5G 🔋</div>
+        <div id="clock">13:03</div>
+        <div style="display: flex; gap: 5px;"><span>5G</span><span>100%</span></div>
     </div>
 
     <div class="profile-card">
-        <div class="avatar-box" onclick="document.getElementById('file').click()">
+        <div class="card-deco">✧ 🫧 ✧</div>
+        <div class="avatar-box" onclick="document.getElementById('file-up').click()">
             <img id="avatar-img" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Mizuki">
         </div>
-        <input type="file" id="file" hidden onchange="upAv(this)">
+        <input type="file" id="file-up" hidden onchange="handleAv(this)">
         
         <div class="name-title">瑞希</div>
-        <span class="handle">@mizukiii</span>
+        <span class="handle">@love_mizuki</span>
+        <span class="geo-tag">📍 圣塞西尔</span>
         
-        <div class="signature-box">
-            <textarea class="sig-input" id="t-sig" rows="1" oninput="autoH(this)" onblur="save()">拉钩 我们永远不说分开的话</textarea>
-        </div>
+        <textarea class="sig-input" id="v-sig" rows="1" oninput="autoH(this)" onblur="saveData()">保持单纯的幸福 🫧</textarea>
     </div>
 
-    <div class="widgets-grid">
-        <div class="widget-item">
-            <textarea class="widget-textarea" id="t-main" rows="1" oninput="autoH(this)" onblur="save()">保持热爱...</textarea>
+    <div class="widgets-container">
+        <div class="widget-box">
+            <span style="font-size: 8px; opacity: 0.3; margin-bottom: 5px;">MOMENT</span>
+            <textarea class="widget-textarea" id="v-w1" rows="1" oninput="autoH(this)" onblur="saveData()">(*^.^*)</textarea>
         </div>
-        <div class="side-stack">
-            <div class="mini-box">
-                <span style="opacity:0.4; transform: scale(0.8);">APP</span>
-                <input type="text" id="t-s1" value="相册" onblur="save()">
-            </div>
-            <div class="mini-box">
-                <span style="opacity:0.4; transform: scale(0.8);">MODE</span>
-                <input type="text" id="t-s2" value="专注" onblur="save()">
-            </div>
+        <div class="widget-box">
+            <span style="font-size: 8px; opacity: 0.3; margin-bottom: 5px;">STATUS</span>
+            <textarea class="widget-textarea" id="v-w2" rows="1" oninput="autoH(this)" onblur="saveData()">琴宁岛 ☁️</textarea>
         </div>
     </div>
 
     <div class="dock">
-        <div class="dock-item" style="border-radius: 20px;">🏠</div>
-        <div class="dock-item"><input type="text" id="t-dock" value="相机" style="width:100%; border:none; text-align:center; font-weight:bold; color:var(--accent); font-size:10px;" onblur="save()"></div>
-        <div class="dock-item" onclick="toggleSet()">⚙️</div>
+        <div class="dock-btn">🤍</div>
+        <div class="dock-btn">💬</div>
+        <div class="dock-btn">📷</div>
+        <div class="dock-btn" onclick="toggleSet()">⚙️</div>
     </div>
 
-    <div class="setting-trigger" onclick="toggleSet()">Edit System</div>
-
-    <div id="settings">
-        <h3 style="opacity:0.6">系统设置</h3>
-        <button class="btn" onclick="toggleEdit()">切换编辑模式</button>
-        <button class="btn" onclick="toggleSet()">关闭</button>
+    <div id="settings-ui">
+        <h2 style="font-size: 16px; opacity: 0.5;">EPhone 设置</h2>
+        <button class="btn-ui" onclick="toggleEdit()">编辑文字内容</button>
+        <button class="btn-ui" onclick="toggleSet()">返回</button>
     </div>
 
     <script>
-        const fields = ['t-sig', 't-main', 't-s1', 't-s2', 't-dock'];
+        const v_ids = ['v-sig', 'v-w1', 'v-w2'];
 
         window.onload = () => {
-            fields.forEach(f => {
-                const v = localStorage.getItem(f);
-                if(v) {
-                    const el = document.getElementById(f);
-                    el.value = v;
+            v_ids.forEach(id => {
+                const saved = localStorage.getItem(id);
+                if(saved) {
+                    const el = document.getElementById(id);
+                    el.value = saved;
                     if(el.tagName === 'TEXTAREA') autoH(el);
                 }
             });
-            const a = localStorage.getItem('m-av');
-            if(a) document.getElementById('avatar-img').src = a;
-            startTime();
+            const av = localStorage.getItem('v-av');
+            if(av) document.getElementById('avatar-img').src = av;
+            updateClock();
         };
 
         function autoH(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
-        function save() { fields.forEach(f => localStorage.setItem(f, document.getElementById(f).value)); }
-        function vibrate() { if(navigator.vibrate) navigator.vibrate(5); }
-        function toggleSet() { const s = document.getElementById('settings'); s.style.display = s.style.display === 'flex' ? 'none' : 'flex'; }
+        function saveData() { v_ids.forEach(id => localStorage.setItem(id, document.getElementById(id).value)); }
+        function haptic() { if(navigator.vibrate) navigator.vibrate(8); }
+        function toggleSet() { const s = document.getElementById('settings-ui'); s.style.display = s.style.display === 'flex' ? 'none' : 'flex'; }
         function toggleEdit() { document.body.classList.toggle('edit-mode'); toggleSet(); }
         
-        function upAv(input) {
+        function handleAv(input) {
             const f = input.files[0];
             if(f){
                 const r = new FileReader();
                 r.onload = e => {
                     document.getElementById('avatar-img').src = e.target.result;
-                    localStorage.setItem('m-av', e.target.result);
+                    localStorage.setItem('v-av', e.target.result);
                 };
                 r.readAsDataURL(f);
             }
         }
 
-        function startTime() {
+        function updateClock() {
             const n = new Date();
-            document.getElementById('time').innerText = n.getHours().toString().padStart(2,'0') + ":" + n.getMinutes().toString().padStart(2,'0');
-            setTimeout(startTime, 1000);
+            document.getElementById('clock').innerText = n.getHours().toString().padStart(2,'0') + ":" + n.getMinutes().toString().padStart(2,'0');
+            setTimeout(updateClock, 1000);
         }
     </script>
 </body>
