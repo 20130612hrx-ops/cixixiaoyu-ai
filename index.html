@@ -6,9 +6,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.85);
+            --glass: rgba(255, 255, 255, 0.82);
             --accent: #8b7d7d;
-            --soft-shadow: 0 8px 20px rgba(0,0,0,0.04);
+            --soft-shadow: 0 8px 24px rgba(0,0,0,0.06);
         }
 
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; user-select: none; }
@@ -17,38 +17,39 @@
             margin: 0; padding: env(safe-area-inset-top) 20px 0;
             background-color: #ffffff;
             /* 初始默认底纹 */
-            background-image: radial-gradient(circle, #f0f0f0 1px, transparent 0);
-            background-size: 30px 30px;
+            background-image: radial-gradient(circle, #f0f0f0 1.2px, transparent 0);
+            background-size: 32px 32px;
             background-position: center;
             background-repeat: no-repeat;
-            background-size: cover; /* 为自定义图准备 */
-            height: 100vh; font-family: -apple-system, sans-serif;
+            background-size: cover;
+            height: 100vh; font-family: -apple-system, "PingFang SC", sans-serif;
             display: flex; flex-direction: column; align-items: center;
             color: var(--accent); overflow: hidden; position: relative;
-            transition: background 0.5s ease;
+            transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* 蕾丝装饰层 */
+        /* 蕾丝装饰 */
         .lace-overlay {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             border: 15px solid transparent;
-            border-image: radial-gradient(circle, #eee 40%, transparent 41%) 20%;
-            pointer-events: none; opacity: 0.5; z-index: 1;
+            border-image: radial-gradient(circle, #eee 38%, transparent 40%) 20%;
+            pointer-events: none; opacity: 0.4; z-index: 1;
         }
 
-        .status-bar { width: 100%; height: 44px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: bold; z-index: 2; }
+        .status-bar { width: 100%; height: 44px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: bold; z-index: 2; opacity: 0.8; }
 
         /* 个人卡片 */
         .profile-card {
-            width: 100%; background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border-radius: 40px; padding: 35px 20px; box-shadow: var(--soft-shadow);
-            text-align: center; border: 1px solid rgba(255,255,255,1); position: relative; margin-top: 10px; z-index: 2;
+            width: 100%; background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-radius: 42px; padding: 35px 20px; box-shadow: var(--soft-shadow);
+            text-align: center; border: 1.5px solid rgba(255,255,255,0.9); position: relative; margin-top: 10px; z-index: 2;
         }
         
-        .avatar-box { width: 85px; height: 85px; margin: 0 auto 12px; cursor: pointer; }
-        #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 4px solid #fff; object-fit: cover; }
+        .avatar-box { width: 88px; height: 88px; margin: 0 auto 12px; cursor: pointer; transition: transform 0.2s; }
+        .avatar-box:active { transform: scale(0.92); }
+        #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 4px solid #fff; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         
-        .name-title { font-size: 18px; font-weight: 900; margin-bottom: 2px; }
+        .name-title { font-size: 19px; font-weight: 900; margin-bottom: 2px; letter-spacing: 0.5px; }
         .handle { font-size: 10px; opacity: 0.4; margin-bottom: 12px; display: block; }
 
         .sig-input {
@@ -57,36 +58,39 @@
         }
 
         /* 组件区 */
-        .widgets-container { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; z-index: 2; }
+        .widgets-container { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 25px; z-index: 2; }
         .widget-box {
-            background: var(--glass); border-radius: 25px; border: 1px solid #fff;
-            padding: 15px; box-shadow: var(--soft-shadow); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 90px;
+            background: var(--glass); border-radius: 28px; border: 1px solid #fff;
+            padding: 18px; box-shadow: var(--soft-shadow); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 95px;
         }
         .widget-textarea {
             width: 100%; background: transparent; border: none; outline: none; text-align: center;
-            color: var(--accent); font-weight: bold; font-size: 13px; resize: none; overflow: hidden; pointer-events: none;
+            color: var(--accent); font-weight: bold; font-size: 14px; resize: none; overflow: hidden; pointer-events: none;
         }
 
         /* Dock 栏 */
         .dock {
-            margin-top: auto; margin-bottom: 30px; width: 100%; height: 75px;
-            background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(15px);
+            margin-top: auto; margin-bottom: 35px; width: 100%; height: 78px;
+            background: rgba(255, 255, 255, 0.55); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-radius: 40px; display: flex; align-items: center; justify-content: space-around;
-            padding: 0 15px; border: 1px solid #fff; box-shadow: var(--soft-shadow); z-index: 2;
+            padding: 0 15px; border: 1px solid rgba(255,255,255,0.8); box-shadow: var(--soft-shadow); z-index: 2;
         }
-        .dock-btn { width: 50px; height: 50px; background: #fff; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .dock-btn { width: 52px; height: 52px; background: #fff; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .dock-btn:active { transform: scale(0.9); }
 
         /* 编辑模式 */
         body.edit-mode .sig-input, body.edit-mode .widget-textarea {
-            pointer-events: auto; background: rgba(0,0,0,0.03); border-radius: 8px;
+            pointer-events: auto; background: rgba(255,255,255,0.4); border-radius: 10px; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
         }
 
         /* 设置面板 */
         #settings-ui {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.95); z-index: 100; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            z-index: 100; flex-direction: column; align-items: center; justify-content: center;
         }
-        .btn-ui { padding: 15px 40px; background: #fff; border-radius: 25px; border: 1px solid #eee; font-weight: bold; color: var(--accent); margin: 8px; width: 220px; text-align: center; }
+        .btn-ui { padding: 16px 40px; background: #fff; border-radius: 26px; border: 1px solid #eee; font-weight: bold; color: var(--accent); margin: 10px; width: 240px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .btn-ui:active { background: #fafafa; }
     </style>
 </head>
 <body onclick="haptic()">
@@ -95,7 +99,7 @@
 
     <div class="status-bar">
         <div id="clock">13:03</div>
-        <div style="display: flex; gap: 5px;"><span>5G</span><span>100%</span></div>
+        <div style="display: flex; gap: 6px;"><span>5G</span><span>100%</span></div>
     </div>
 
     <div class="profile-card">
@@ -112,11 +116,11 @@
 
     <div class="widgets-container">
         <div class="widget-box">
-            <span style="font-size: 8px; opacity: 0.3; margin-bottom: 5px;">MOMENT</span>
+            <span style="font-size: 8px; opacity: 0.3; margin-bottom: 6px; letter-spacing: 1px;">MOMENT</span>
             <textarea class="widget-textarea" id="v-w1" rows="1" oninput="autoH(this)" onblur="saveData()">(*^.^*)</textarea>
         </div>
         <div class="widget-box">
-            <span style="font-size: 8px; opacity: 0.3; margin-bottom: 5px;">STATUS</span>
+            <span style="font-size: 8px; opacity: 0.3; margin-bottom: 6px; letter-spacing: 1px;">STATUS</span>
             <textarea class="widget-textarea" id="v-w2" rows="1" oninput="autoH(this)" onblur="saveData()">琴宁岛 ☁️</textarea>
         </div>
     </div>
@@ -129,12 +133,12 @@
     </div>
 
     <div id="settings-ui">
-        <h2 style="font-size: 16px; opacity: 0.5; margin-bottom: 20px;">EPhone 系统管理</h2>
-        <div class="btn-ui" onclick="toggleEdit()">切换编辑模式</div>
-        <div class="btn-ui" onclick="document.getElementById('file-bg').click()">更换自定义背景</div>
-        <div class="btn-ui" onclick="resetBg()" style="color: #d9a7a7;">重置初始背景</div>
+        <div style="font-size: 16px; font-weight: 900; opacity: 0.6; margin-bottom: 30px;">EPhone 实验室</div>
+        <div class="btn-ui" onclick="toggleEdit()">切换文字编辑模式</div>
+        <div class="btn-ui" onclick="document.getElementById('file-bg').click()">上传 Base64 背景</div>
+        <div class="btn-ui" onclick="resetBg()" style="color: #c99; border-color: #fdd;">清除自定义背景</div>
         <input type="file" id="file-bg" hidden onchange="handleBg(this)">
-        <div class="btn-ui" onclick="toggleSet()" style="background: #f5f5f5; border:none; margin-top: 20px;">返回桌面</div>
+        <div class="btn-ui" onclick="toggleSet()" style="background: var(--accent); color: #fff; border:none; margin-top: 30px;">确认并保存</div>
     </div>
 
     <script>
@@ -149,12 +153,13 @@
                     if(el.tagName === 'TEXTAREA') autoH(el);
                 }
             });
-            // 加载头像和背景
+            
+            // 关键：从 LocalStorage 加载 Base64 字符串
             const av = localStorage.getItem('v-av');
             if(av) document.getElementById('avatar-img').src = av;
             
-            const bg = localStorage.getItem('v-bg-custom');
-            if(bg) applyBg(bg);
+            const bgBase64 = localStorage.getItem('v-bg-base64');
+            if(bgBase64) applyBg(bgBase64);
             
             updateClock();
         };
@@ -165,7 +170,7 @@
         function toggleSet() { const s = document.getElementById('settings-ui'); s.style.display = s.style.display === 'flex' ? 'none' : 'flex'; }
         function toggleEdit() { document.body.classList.toggle('edit-mode'); toggleSet(); }
         
-        // 处理头像
+        // 头像也使用 Base64 存储
         function handleAv(input) {
             const f = input.files[0];
             if(f){
@@ -178,31 +183,31 @@
             }
         }
 
-        // 处理背景图
+        // 重点：将背景图转为 Base64 字符串存储
         function handleBg(input) {
             const f = input.files[0];
             if(f){
                 const r = new FileReader();
                 r.onload = e => {
-                    const bgData = e.target.result;
-                    applyBg(bgData);
-                    localStorage.setItem('v-bg-custom', bgData);
+                    const base64String = e.target.result;
+                    applyBg(base64String);
+                    localStorage.setItem('v-bg-base64', base64String); // 存储 Base64 编码
                     toggleSet();
                 };
-                r.readAsDataURL(f);
+                r.readAsDataURL(f); // 开始 Base64 转换
             }
         }
 
-        function applyBg(url) {
-            document.body.style.backgroundImage = `url(${url})`;
+        function applyBg(data) {
+            document.body.style.backgroundImage = `url(${data})`;
             document.body.style.backgroundSize = "cover";
-            document.body.style.backgroundPosition = "center";
+            document.body.style.backgroundPosition = "center center";
         }
 
         function resetBg() {
-            localStorage.removeItem('v-bg-custom');
-            document.body.style.backgroundImage = "radial-gradient(circle, #f0f0f0 1px, transparent 0)";
-            document.body.style.backgroundSize = "30px 30px";
+            localStorage.removeItem('v-bg-base64');
+            document.body.style.backgroundImage = "radial-gradient(circle, #f0f0f0 1.2px, transparent 0)";
+            document.body.style.backgroundSize = "32px 32px";
             toggleSet();
         }
 
