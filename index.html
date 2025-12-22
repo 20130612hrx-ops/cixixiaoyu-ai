@@ -9,14 +9,12 @@
             --accent: #8b7d7d;
         }
 
-        /* 基础重置：解决 iOS 高度塌陷 */
         html, body { height: 100%; height: -webkit-fill-available; }
-        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; user-select: none; }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
 
         body {
-            margin: 0; 
-            padding: env(safe-area-inset-top) 20px 0;
-            background-color: #ffffff; background-position: center center; background-repeat: no-repeat; background-size: cover;
+            margin: 0; padding: env(safe-area-inset-top) 20px 0;
+            background-color: #ffffff; background-position: center; background-repeat: no-repeat; background-size: cover;
             font-family: -apple-system, sans-serif;
             display: flex; flex-direction: column; align-items: center;
             color: var(--accent); overflow: hidden; position: relative;
@@ -34,46 +32,50 @@
 
         /* 个人卡片 */
         .profile-card {
-            width: 100%; background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            width: 100%; background: var(--glass); backdrop-filter: blur(15px);
             border-radius: 42px; padding: 30px 20px; text-align: center; border: 1.5px solid rgba(255,255,255,0.9); margin-top: 10px; z-index: 2;
         }
         .avatar-box { width: 85px; height: 85px; margin: 0 auto 12px; cursor: pointer; }
         #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 4px solid #fff; object-fit: cover; }
-        .sig-input { width: 100%; background: transparent; border: none; outline: none; color: var(--accent); font-size: 11px; text-align: center; resize: none; overflow: hidden; pointer-events: none; margin-top: 8px; }
+        
+        /* 可编辑的名字和签名 */
+        .editable-name {
+            width: 100%; background: transparent; border: none; outline: none;
+            font-size: 18px; font-weight: 900; color: var(--accent); text-align: center;
+            letter-spacing: 1px; margin-bottom: 5px;
+        }
+        .sig-input {
+            width: 100%; background: transparent; border: none; outline: none; color: var(--accent);
+            font-size: 11px; text-align: center; resize: none; overflow: hidden; margin-top: 8px;
+        }
 
-        /* 胶囊搜索栏 */
+        /* 锁定的组件 */
         .search-container { width: 100%; margin: 18px 0; z-index: 2; }
-        .search-bar { width: 100%; height: 40px; background: var(--glass); border-radius: 20px; border: 1px solid #fff; display: flex; align-items: center; padding: 0 15px; }
-        .search-input { width: 100%; background: transparent; border: none; outline: none; color: var(--accent); font-size: 12px; opacity: 0.6; pointer-events: none; text-align: center; }
+        .search-bar { width: 100%; height: 40px; background: var(--glass); border-radius: 20px; border: 1px solid #fff; display: flex; align-items: center; justify-content: center; opacity: 0.7; }
+        .search-text { font-size: 12px; }
 
-        /* 中间组件区 */
         .widgets-container { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; z-index: 2; }
         .widget-box {
             background: var(--glass); border-radius: 28px; border: 1px solid #fff;
-            padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 95px;
+            padding: 15px; display: flex; align-items: center; justify-content: center; min-height: 95px; font-weight: bold; font-size: 14px;
         }
-        .widget-textarea { width: 100%; background: transparent; border: none; outline: none; text-align: center; color: var(--accent); font-weight: bold; font-size: 14px; resize: none; overflow: hidden; pointer-events: none; }
 
-        /* --- 修正后的 Dock 栏 --- */
+        /* Dock 栏 */
         .dock { 
             margin-top: auto; 
-            /* 适配底部安全区域，并额外上移 45px 确保不被遮挡 */
             margin-bottom: calc(env(safe-area-inset-bottom) + 45px); 
-            width: 100%; height: 78px; 
-            background: rgba(255, 255, 255, 0.55); backdrop-filter: blur(20px); 
-            border-radius: 40px; display: flex; align-items: center; justify-content: space-around; 
-            padding: 0 15px; border: 1px solid rgba(255,255,255,0.8); z-index: 2; 
+            width: 100%; height: 78px; background: rgba(255, 255, 255, 0.55); backdrop-filter: blur(20px); 
+            border-radius: 40px; display: flex; align-items: center; justify-content: space-around; padding: 0 15px; border: 1px solid rgba(255,255,255,0.8); z-index: 2; 
         }
         .dock-btn { width: 52px; height: 52px; background: #fff; border-radius: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .dock-btn img { width: 70%; height: 70%; object-fit: contain; }
 
-        /* 其他功能原封不动 */
-        body.edit-mode .sig-input, body.edit-mode .search-input, body.edit-mode .widget-textarea { pointer-events: auto; background: rgba(255,255,255,0.6); }
+        /* 设置面板 */
         #settings-ui { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.95); z-index: 100; flex-direction: column; align-items: center; justify-content: center; }
         .btn-ui { padding: 16px 40px; background: #fff; border-radius: 26px; border: 1px solid #eee; font-weight: bold; color: var(--accent); margin: 10px; width: 240px; text-align: center; }
     </style>
 </head>
-<body onclick="haptic()">
+<body>
 
     <div class="status-bar">
         <div id="clock">13:03</div>
@@ -87,19 +89,19 @@
     <div class="profile-card">
         <div class="avatar-box" onclick="document.getElementById('file-av').click()"><img id="avatar-img" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Mizuki"></div>
         <input type="file" id="file-av" hidden onchange="handleAv(this)">
-        <div style="font-size: 18px; font-weight: 900; letter-spacing: 1px;">瑞希</div>
+        
+        <input type="text" class="editable-name" id="v-name" value="瑞希" onblur="saveData()">
+        
         <textarea class="sig-input" id="v-sig" rows="1" oninput="autoH(this)" onblur="saveData()">保持单纯的幸福 🫧</textarea>
     </div>
 
     <div class="search-container">
-        <div class="search-bar">
-            <input type="text" class="search-input" id="v-search" value="Search everything..." onblur="saveData()">
-        </div>
+        <div class="search-bar"><span class="search-text">Search everything...</span></div>
     </div>
 
     <div class="widgets-container">
-        <div class="widget-box"><textarea class="widget-textarea" id="v-w1" rows="1" oninput="autoH(this)" onblur="saveData()">(*^.^*)</textarea></div>
-        <div class="widget-box"><textarea class="widget-textarea" id="v-w2" rows="1" oninput="autoH(this)" onblur="saveData()">琴宁岛 ☁️</textarea></div>
+        <div class="widget-box" id="v-w1">(*^.^*)</div>
+        <div class="widget-box" id="v-w2">琴宁岛 ☁️</div>
     </div>
 
     <div class="dock">
@@ -110,10 +112,9 @@
     </div>
 
     <div id="settings-ui">
-        <div class="btn-ui" onclick="toggleEdit()">切换文字编辑模式</div>
         <div class="btn-ui" onclick="document.getElementById('file-bg').click()">上传自定义背景</div>
         <input type="file" id="file-bg" hidden onchange="handleBg(this)">
-        <div class="btn-ui" onclick="toggleSet()" style="background: var(--accent); color: #fff; margin-top: 30px;">返回</div>
+        <div class="btn-ui" onclick="toggleSet()" style="background: var(--accent); color: #fff; margin-top: 30px;">返回桌面</div>
     </div>
 
     <script>
@@ -125,13 +126,14 @@
             if(bgCustom || INITIAL_BG) document.body.style.backgroundImage = `url(${bgCustom || INITIAL_BG})`;
             const av = localStorage.getItem('v-av');
             if(av) document.getElementById('avatar-img').src = av;
-            ['v-sig', 'v-w1', 'v-w2', 'v-search'].forEach(id => {
-                const saved = localStorage.getItem(id);
-                if(saved) {
-                    document.getElementById(id).value = saved;
-                    autoH(document.getElementById(id));
-                }
-            });
+            
+            // 加载保存的名字和签名
+            if(localStorage.getItem('v-name')) document.getElementById('v-name').value = localStorage.getItem('v-name');
+            if(localStorage.getItem('v-sig')) {
+                document.getElementById('v-sig').value = localStorage.getItem('v-sig');
+                autoH(document.getElementById('v-sig'));
+            }
+
             document.getElementById('icon1').src = ICON_1;
             document.getElementById('icon2').src = ICON_2;
             document.getElementById('icon3').src = ICON_3;
@@ -139,13 +141,16 @@
             updateClock(); updateBattery();
         };
 
-        function saveData() { ['v-sig', 'v-w1', 'v-w2', 'v-search'].forEach(id => { localStorage.setItem(id, document.getElementById(id).value); }); }
+        function saveData() {
+            localStorage.setItem('v-name', document.getElementById('v-name').value);
+            localStorage.setItem('v-sig', document.getElementById('v-sig').value);
+        }
+
         function updateBattery() { if (navigator.getBattery) { navigator.getBattery().then(bat => { document.getElementById('bat-level').style.width = (bat.level * 100) + '%'; }); } }
         function updateClock() { const n = new Date(); document.getElementById('clock').innerText = n.getHours().toString().padStart(2,'0') + ":" + n.getMinutes().toString().padStart(2,'0'); setTimeout(updateClock, 1000); }
         function autoH(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
-        function haptic() { if(navigator.vibrate) navigator.vibrate(8); }
         function toggleSet() { const s = document.getElementById('settings-ui'); s.style.display = s.style.display === 'flex' ? 'none' : 'flex'; }
-        function toggleEdit() { document.body.classList.toggle('edit-mode'); toggleSet(); }
+        
         function handleAv(input) { const f = input.files[0]; if(f){ const r = new FileReader(); r.onload = e => { document.getElementById('avatar-img').src = e.target.result; localStorage.setItem('v-av', e.target.result); }; r.readAsDataURL(f); } }
         function handleBg(input) { const f = input.files[0]; if(f){ const r = new FileReader(); r.onload = e => { document.body.style.backgroundImage = `url(${e.target.result})`; localStorage.setItem('v-bg-base64', e.target.result); toggleSet(); }; r.readAsDataURL(f); } }
     </script>
