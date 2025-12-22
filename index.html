@@ -9,12 +9,15 @@
             --accent: #8b7d7d;
         }
 
+        /* 基础重置：解决 iOS 高度塌陷 */
+        html, body { height: 100%; height: -webkit-fill-available; }
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; user-select: none; }
 
         body {
-            margin: 0; padding: env(safe-area-inset-top) 20px 0;
+            margin: 0; 
+            padding: env(safe-area-inset-top) 20px 0;
             background-color: #ffffff; background-position: center center; background-repeat: no-repeat; background-size: cover;
-            height: 100vh; font-family: -apple-system, sans-serif;
+            font-family: -apple-system, sans-serif;
             display: flex; flex-direction: column; align-items: center;
             color: var(--accent); overflow: hidden; position: relative;
         }
@@ -31,7 +34,7 @@
 
         /* 个人卡片 */
         .profile-card {
-            width: 100%; background: var(--glass); backdrop-filter: blur(15px);
+            width: 100%; background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border-radius: 42px; padding: 30px 20px; text-align: center; border: 1.5px solid rgba(255,255,255,0.9); margin-top: 10px; z-index: 2;
         }
         .avatar-box { width: 85px; height: 85px; margin: 0 auto 12px; cursor: pointer; }
@@ -51,14 +54,21 @@
         }
         .widget-textarea { width: 100%; background: transparent; border: none; outline: none; text-align: center; color: var(--accent); font-weight: bold; font-size: 14px; resize: none; overflow: hidden; pointer-events: none; }
 
-        /* Dock 栏 */
-        .dock { margin-top: auto; margin-bottom: 35px; width: 100%; height: 78px; background: rgba(255, 255, 255, 0.55); backdrop-filter: blur(20px); border-radius: 40px; display: flex; align-items: center; justify-content: space-around; padding: 0 15px; border: 1px solid rgba(255,255,255,0.8); z-index: 2; }
+        /* --- 修正后的 Dock 栏 --- */
+        .dock { 
+            margin-top: auto; 
+            /* 适配底部安全区域，并额外上移 45px 确保不被遮挡 */
+            margin-bottom: calc(env(safe-area-inset-bottom) + 45px); 
+            width: 100%; height: 78px; 
+            background: rgba(255, 255, 255, 0.55); backdrop-filter: blur(20px); 
+            border-radius: 40px; display: flex; align-items: center; justify-content: space-around; 
+            padding: 0 15px; border: 1px solid rgba(255,255,255,0.8); z-index: 2; 
+        }
         .dock-btn { width: 52px; height: 52px; background: #fff; border-radius: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .dock-btn img { width: 70%; height: 70%; object-fit: contain; }
 
-        /* 编辑模式 */
+        /* 其他功能原封不动 */
         body.edit-mode .sig-input, body.edit-mode .search-input, body.edit-mode .widget-textarea { pointer-events: auto; background: rgba(255,255,255,0.6); }
-        
         #settings-ui { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.95); z-index: 100; flex-direction: column; align-items: center; justify-content: center; }
         .btn-ui { padding: 16px 40px; background: #fff; border-radius: 26px; border: 1px solid #eee; font-weight: bold; color: var(--accent); margin: 10px; width: 240px; text-align: center; }
     </style>
@@ -107,7 +117,6 @@
     </div>
 
     <script>
-        /* 这里填入 Base64 */
         const INITIAL_BG = ""; 
         const ICON_1 = ""; const ICON_2 = ""; const ICON_3 = ""; const ICON_SET = ""; 
 
