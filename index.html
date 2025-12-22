@@ -7,7 +7,9 @@
         :root {
             --glass: rgba(255, 255, 255, 0.88);
             --accent: #8b7d7d;
-            --soft-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+            /* 调整阴影层级：卡片更深，组件更浅 */
+            --card-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+            --widget-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
         }
 
         html, body { height: 100%; height: -webkit-fill-available; }
@@ -21,41 +23,39 @@
             color: var(--accent); overflow: hidden; position: relative;
         }
 
+        /* 1. 状态栏沉浸式处理：降低饱和度，增加透明度 */
+        .status-bar { 
+            width: 100%; height: 44px; display: flex; justify-content: space-between; 
+            align-items: center; font-size: 13px; font-weight: 600; z-index: 2; padding: 0 4px;
+            opacity: 0.6; /* 核心修改：沉浸感 */
+        }
         .status-bar, .editable-name, .sig-input, .search-input, .widget-box, .btn-ui { color: var(--accent); }
         .bar.active, .battery-fill { background-color: var(--accent); }
-        .battery-icu { border-color: var(--accent); background-color: transparent; }
+        .battery-icu { border-color: var(--accent); background-color: transparent; border-width: 1px; }
         .bar { background-color: var(--accent); opacity: 0.2; }
 
-        .status-bar { width: 100%; height: 44px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; z-index: 2; padding: 0 4px; }
-        .status-right { display: flex; align-items: center; gap: 6px; }
-        .signal-bars { display: flex; align-items: flex-end; gap: 1.5px; height: 10px; }
-        .bar { width: 3.5px; border-radius: 1px; }
-        .battery-icu { width: 25px; height: 11.5px; border: 1.2px solid; border-radius: 3.5px; position: relative; padding: 1px; }
-        .battery-icu::after { content: ''; position: absolute; right: -3.5px; top: 3px; width: 2px; height: 4px; background: currentColor; border-radius: 0 1px 1px 0; }
-        .battery-fill { height: 100%; border-radius: 1px; width: 100%; }
-
+        /* 2. 个人卡片：拉开纵深层级 */
         .profile-card {
             width: 100%; background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border-radius: 42px; padding: 30px 20px; text-align: center; 
             border: 1px solid rgba(255,255,255,0.7); margin-top: 10px; z-index: 2;
-            box-shadow: var(--soft-shadow);
+            box-shadow: var(--card-shadow); /* 核心修改：更深的阴影 */
         }
-        .avatar-box { width: 85px; height: 85px; margin: 0 auto 12px; cursor: pointer; }
+        .avatar-box { width: 85px; height: 85px; margin: 0 auto 15px; cursor: pointer; }
         #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 4px solid #fff; object-fit: cover; }
-        .editable-name { width: 100%; background: transparent; border: none; outline: none; font-size: 18px; font-weight: 900; text-align: center; letter-spacing: 1px; }
-        .sig-input { width: 100%; background: transparent; border: none; outline: none; font-size: 11px; text-align: center; resize: none; overflow: hidden; margin-top: 8px; }
-
-        /* 升级后的多行搜索栏 */
-        .search-container { width: 100%; margin: 18px 0; z-index: 2; }
+        
+        /* 3. 搜索栏：优化间距与字间距 */
+        .search-container { width: 100%; margin: 20px 0; z-index: 2; }
         .search-bar { 
-            width: 100%; min-height: 40px; background: var(--glass); border-radius: 20px; 
+            width: 100%; min-height: 44px; background: var(--glass); border-radius: 22px; 
             border: 1px solid #fff; display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03); padding: 8px 15px;
+            box-shadow: var(--widget-shadow); padding: 10px 15px;
         }
         .search-input {
             width: 100%; background: transparent; border: none; outline: none;
-            text-align: center; font-size: 12px; font-weight: bold; color: inherit;
-            resize: none; overflow: hidden; font-family: inherit; line-height: 1.4;
+            text-align: center; font-size: 13px; font-weight: bold; color: inherit;
+            resize: none; overflow: hidden; font-family: inherit; line-height: 1.5;
+            letter-spacing: 1px;
         }
 
         .widgets-container { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; z-index: 2; }
@@ -63,17 +63,22 @@
             background: var(--glass); border-radius: 28px; border: 1px solid #fff; 
             padding: 15px; display: flex; align-items: center; justify-content: center; 
             min-height: 95px; font-weight: bold; font-size: 14px;
-            box-shadow: var(--soft-shadow);
+            box-shadow: var(--widget-shadow);
         }
 
+        /* 4. Dock 栏：增加内阴影拟物感 */
         .dock { 
             margin-top: auto; margin-bottom: calc(env(safe-area-inset-bottom) + 45px); 
             width: 100%; height: 78px; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); 
             border-radius: 40px; display: flex; align-items: center; justify-content: space-around; 
             padding: 0 15px; border: 1px solid rgba(255,255,255,0.8); z-index: 2;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.06);
         }
-        .dock-btn { width: 52px; height: 52px; background: #fff; border-radius: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .dock-btn { 
+            width: 52px; height: 52px; background: #fff; border-radius: 20px; 
+            display: flex; align-items: center; justify-content: center; overflow: hidden; 
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.03); /* 核心修改：内凹感 */
+        }
         .dock-btn img { width: 70%; height: 70%; object-fit: contain; }
 
         #settings-ui { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.96); z-index: 100; flex-direction: column; align-items: center; justify-content: center; }
@@ -82,7 +87,6 @@
     </style>
 </head>
 <body>
-
     <div class="status-bar">
         <div id="clock">--:--</div>
         <div class="status-right">
@@ -95,8 +99,8 @@
     <div class="profile-card">
         <div class="avatar-box" onclick="document.getElementById('file-av').click()"><img id="avatar-img" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Mizuki"></div>
         <input type="file" id="file-av" hidden onchange="handleAv(this)">
-        <input type="text" class="editable-name" id="v-name" value="点击可编辑" onblur="saveData()">
-        <textarea class="sig-input" id="v-sig" rows="1" oninput="autoH(this)" onblur="saveData()">个性签名</textarea>
+        <input type="text" class="editable-name" id="v-name" value="咲雨" onblur="saveData()">
+        <textarea class="sig-input" id="v-sig" rows="1" oninput="autoH(this)" onblur="saveData()">可恶 被你可爱到了！</textarea>
     </div>
 
     <div class="search-container">
@@ -125,9 +129,7 @@
     </div>
 
     <script>
-        const INITIAL_BG = ""; 
-        const ICON_1 = ""; const ICON_2 = ""; const ICON_3 = ""; const ICON_SET = ""; 
-
+        const INITIAL_BG = ""; const ICON_1 = ""; const ICON_2 = ""; const ICON_3 = ""; const ICON_SET = ""; 
         window.onload = () => {
             const bgCustom = localStorage.getItem('v-bg-base64');
             if(bgCustom || INITIAL_BG) document.body.style.backgroundImage = `url(${bgCustom || INITIAL_BG})`;
@@ -135,36 +137,20 @@
             if(savedColor) updateThemeColor(savedColor);
             const av = localStorage.getItem('v-av');
             if(av) document.getElementById('avatar-img').src = av;
-            
             if(localStorage.getItem('v-name')) document.getElementById('v-name').value = localStorage.getItem('v-name');
-            if(localStorage.getItem('v-sig')) {
-                document.getElementById('v-sig').value = localStorage.getItem('v-sig');
-                autoH(document.getElementById('v-sig'));
-            }
-            if(localStorage.getItem('v-search')) {
-                document.getElementById('v-search').value = localStorage.getItem('v-search');
-                autoH(document.getElementById('v-search'));
-            }
-
-            document.getElementById('icon1').src = ICON_1;
-            document.getElementById('icon2').src = ICON_2;
-            document.getElementById('icon3').src = ICON_3;
-            document.getElementById('iconSet').src = ICON_SET;
+            if(localStorage.getItem('v-sig')) { document.getElementById('v-sig').value = localStorage.getItem('v-sig'); autoH(document.getElementById('v-sig')); }
+            if(localStorage.getItem('v-search')) { document.getElementById('v-search').value = localStorage.getItem('v-search'); autoH(document.getElementById('v-search')); }
+            document.getElementById('icon1').src = ICON_1; document.getElementById('icon2').src = ICON_2;
+            document.getElementById('icon3').src = ICON_3; document.getElementById('iconSet').src = ICON_SET;
             updateClock(); updateBattery();
         };
-
-        function updateThemeColor(color) {
-            document.documentElement.style.setProperty('--accent', color);
-            document.getElementById('color-picker').value = color;
-        }
-
+        function updateThemeColor(color) { document.documentElement.style.setProperty('--accent', color); document.getElementById('color-picker').value = color; }
         function saveData() {
             localStorage.setItem('v-name', document.getElementById('v-name').value);
             localStorage.setItem('v-sig', document.getElementById('v-sig').value);
             localStorage.setItem('v-search', document.getElementById('v-search').value);
             localStorage.setItem('v-accent-color', getComputedStyle(document.documentElement).getPropertyValue('--accent'));
         }
-
         function updateBattery() { if (navigator.getBattery) { navigator.getBattery().then(bat => { document.getElementById('bat-level').style.width = (bat.level * 100) + '%'; }); } }
         function updateClock() { const n = new Date(); document.getElementById('clock').innerText = n.getHours().toString().padStart(2,'0') + ":" + n.getMinutes().toString().padStart(2,'0'); setTimeout(updateClock, 1000); }
         function autoH(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
