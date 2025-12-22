@@ -7,7 +7,6 @@
         :root {
             --glass: rgba(255, 255, 255, 0.88);
             --accent: #8b7d7d;
-            /* 柔和阴影变量 */
             --soft-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
         }
 
@@ -22,12 +21,11 @@
             color: var(--accent); overflow: hidden; position: relative;
         }
 
-        .status-bar, .editable-name, .sig-input, .search-bar, .widget-box, .btn-ui { color: var(--accent); }
+        .status-bar, .editable-name, .sig-input, .search-input, .widget-box, .btn-ui { color: var(--accent); }
         .bar.active, .battery-fill { background-color: var(--accent); }
         .battery-icu { border-color: var(--accent); background-color: transparent; }
         .bar { background-color: var(--accent); opacity: 0.2; }
 
-        /* iOS 状态栏 */
         .status-bar { width: 100%; height: 44px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; z-index: 2; padding: 0 4px; }
         .status-right { display: flex; align-items: center; gap: 6px; }
         .signal-bars { display: flex; align-items: flex-end; gap: 1.5px; height: 10px; }
@@ -36,7 +34,6 @@
         .battery-icu::after { content: ''; position: absolute; right: -3.5px; top: 3px; width: 2px; height: 4px; background: currentColor; border-radius: 0 1px 1px 0; }
         .battery-fill { height: 100%; border-radius: 1px; width: 100%; }
 
-        /* 个人卡片 - 增加阴影 */
         .profile-card {
             width: 100%; background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border-radius: 42px; padding: 30px 20px; text-align: center; 
@@ -44,19 +41,23 @@
             box-shadow: var(--soft-shadow);
         }
         .avatar-box { width: 85px; height: 85px; margin: 0 auto 12px; cursor: pointer; }
-        #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 4px solid #fff; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .editable-name { width: 100%; background: transparent; border: none; outline: none; font-size: 18px; font-weight: 900; text-align: center; letter-spacing: 1px; margin-bottom: 5px; }
+        #avatar-img { width: 100%; height: 100%; border-radius: 50%; border: 4px solid #fff; object-fit: cover; }
+        .editable-name { width: 100%; background: transparent; border: none; outline: none; font-size: 18px; font-weight: 900; text-align: center; letter-spacing: 1px; }
         .sig-input { width: 100%; background: transparent; border: none; outline: none; font-size: 11px; text-align: center; resize: none; overflow: hidden; margin-top: 8px; }
 
-        /* 搜索栏 - 增加微弱阴影 */
+        /* 升级后的多行搜索栏 */
         .search-container { width: 100%; margin: 18px 0; z-index: 2; }
         .search-bar { 
-            width: 100%; height: 40px; background: var(--glass); border-radius: 20px; 
+            width: 100%; min-height: 40px; background: var(--glass); border-radius: 20px; 
             border: 1px solid #fff; display: flex; align-items: center; justify-content: center; 
-            opacity: 0.9; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); padding: 8px 15px;
+        }
+        .search-input {
+            width: 100%; background: transparent; border: none; outline: none;
+            text-align: center; font-size: 12px; font-weight: bold; color: inherit;
+            resize: none; overflow: hidden; font-family: inherit; line-height: 1.4;
         }
 
-        /* 小组件 - 增加阴影 */
         .widgets-container { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; z-index: 2; }
         .widget-box { 
             background: var(--glass); border-radius: 28px; border: 1px solid #fff; 
@@ -65,7 +66,6 @@
             box-shadow: var(--soft-shadow);
         }
 
-        /* Dock - 增强阴影感 */
         .dock { 
             margin-top: auto; margin-bottom: calc(env(safe-area-inset-bottom) + 45px); 
             width: 100%; height: 78px; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); 
@@ -73,14 +73,12 @@
             padding: 0 15px; border: 1px solid rgba(255,255,255,0.8); z-index: 2;
             box-shadow: 0 10px 40px rgba(0,0,0,0.08);
         }
-        .dock-btn { width: 52px; height: 52px; background: #fff; border-radius: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .dock-btn { width: 52px; height: 52px; background: #fff; border-radius: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .dock-btn img { width: 70%; height: 70%; object-fit: contain; }
 
-        /* 设置面板 */
         #settings-ui { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.96); z-index: 100; flex-direction: column; align-items: center; justify-content: center; }
-        .btn-ui { padding: 16px 40px; background: #fff; border-radius: 26px; border: 1px solid #eee; font-weight: bold; margin: 10px; width: 260px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
-        #color-picker { width: 30px; height: 30px; border: none; background: transparent; cursor: pointer; opacity: 0; position: absolute; }
-        .color-label { position: relative; }
+        .btn-ui { padding: 16px 40px; background: #fff; border-radius: 26px; border: 1px solid #eee; font-weight: bold; margin: 10px; width: 260px; text-align: center; cursor: pointer; }
+        #color-picker { width: 0; height: 0; opacity: 0; position: absolute; }
     </style>
 </head>
 <body>
@@ -102,7 +100,9 @@
     </div>
 
     <div class="search-container">
-        <div class="search-bar"><span style="font-size: 12px; font-weight: bold;">Search everything...</span></div>
+        <div class="search-bar">
+            <textarea class="search-input" id="v-search" rows="1" oninput="autoH(this)" onblur="saveData()">Search everything...</textarea>
+        </div>
     </div>
 
     <div class="widgets-container">
@@ -118,7 +118,7 @@
     </div>
 
     <div id="settings-ui">
-        <label class="btn-ui color-label">选择主题颜色<input type="color" id="color-picker" oninput="updateThemeColor(this.value)" onchange="saveData()"></label>
+        <label class="btn-ui">选择主题颜色<input type="color" id="color-picker" oninput="updateThemeColor(this.value)" onchange="saveData()"></label>
         <div class="btn-ui" onclick="document.getElementById('file-bg').click()">更换背景图</div>
         <input type="file" id="file-bg" hidden onchange="handleBg(this)">
         <div class="btn-ui" onclick="toggleSet()" style="background: var(--accent); color: #fff; border: none; margin-top: 30px;">返回桌面</div>
@@ -135,11 +135,17 @@
             if(savedColor) updateThemeColor(savedColor);
             const av = localStorage.getItem('v-av');
             if(av) document.getElementById('avatar-img').src = av;
+            
             if(localStorage.getItem('v-name')) document.getElementById('v-name').value = localStorage.getItem('v-name');
             if(localStorage.getItem('v-sig')) {
                 document.getElementById('v-sig').value = localStorage.getItem('v-sig');
                 autoH(document.getElementById('v-sig'));
             }
+            if(localStorage.getItem('v-search')) {
+                document.getElementById('v-search').value = localStorage.getItem('v-search');
+                autoH(document.getElementById('v-search'));
+            }
+
             document.getElementById('icon1').src = ICON_1;
             document.getElementById('icon2').src = ICON_2;
             document.getElementById('icon3').src = ICON_3;
@@ -155,6 +161,7 @@
         function saveData() {
             localStorage.setItem('v-name', document.getElementById('v-name').value);
             localStorage.setItem('v-sig', document.getElementById('v-sig').value);
+            localStorage.setItem('v-search', document.getElementById('v-search').value);
             localStorage.setItem('v-accent-color', getComputedStyle(document.documentElement).getPropertyValue('--accent'));
         }
 
